@@ -1,0 +1,19 @@
+{{.RootName}} {{.Version}} {{.RootDescription}}
+
+Usage:
+    {{.QualifiedName}} [flags] [command] {{.ArgumentList}}
+
+{{ if .SubCommands -}}
+Commands:
+{{.SubCommandsTable}}
+{{ end -}}
+
+{{ if .Arguments -}}
+Arguments:
+{{.ArgumentTable}}
+{{ end -}}
+
+{{ if .Flags -}}
+Flags:
+{{.FlagTable}}
+{{ end -}}
