@@ -4,7 +4,7 @@ Usage:
     {{.QualifiedName}} {{- if .Flags }} [flags]{{ end -}} {{- if .SubCommands }} [subcommands]{{ end }} {{.ArgumentList}}
 
 {{ if .SubCommands -}}
-SubCommands:
+Commands:
 {{.SubCommandsTable}}
 {{ end -}}
 

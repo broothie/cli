@@ -23,17 +23,27 @@ type Command struct {
 	handler     Handler
 }
 
-func New(name, description string, options ...option.Option[*Command]) (*Command, error) {
-	command, err := option.Apply(&Command{name: name, description: description, handler: helpHandler}, options...)
+func NewCommand(name, description string, options ...option.Option[*Command]) (*Command, error) {
+	baseCommand := &Command{
+		name:        name,
+		description: description,
+		handler:     helpHandler,
+	}
+
+	command, err := option.Apply(baseCommand, options...)
 	if err != nil {
 		return nil, errors.Wrapf(err, "building command %q", name)
+	}
+
+	if err := command.validate(); err != nil {
+		return nil, errors.Wrapf(err, "invalid command %q", name)
 	}
 
 	return command, nil
 }
 
 func Run(name, description string, options ...option.Option[*Command]) error {
-	command, err := New(name, description, options...)
+	command, err := NewCommand(name, description, options...)
 	if err != nil {
 		return err
 	}

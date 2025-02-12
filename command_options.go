@@ -28,7 +28,7 @@ func SetHandler(handler Handler) option.Func[*Command] {
 
 func AddSubCmd(name, description string, options ...option.Option[*Command]) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
-		subCommand, err := New(name, description, options...)
+		subCommand, err := NewCommand(name, description, options...)
 		if err != nil {
 			return nil, err
 		}
@@ -40,17 +40,10 @@ func AddSubCmd(name, description string, options ...option.Option[*Command]) opt
 }
 
 func AddFlag(name, description string, options ...option.Option[*Flag]) option.Func[*Command] {
-	flag := &Flag{
-		name:         name,
-		description:  description,
-		parser:       NewArgParser(StringParser),
-		defaultValue: "",
-	}
-
 	return func(command *Command) (*Command, error) {
-		flag, err := option.Apply(flag, options...)
+		flag, err := newFlag(name, description, options...)
 		if err != nil {
-			return nil, errors.Wrapf(err, "building flag %q", name)
+			return nil, err
 		}
 
 		command.flags = append(command.flags, flag)
@@ -59,14 +52,8 @@ func AddFlag(name, description string, options ...option.Option[*Flag]) option.F
 }
 
 func AddArg(name, description string, options ...option.Option[*Argument]) option.Func[*Command] {
-	argument := &Argument{
-		name:        name,
-		description: description,
-		parser:      NewArgParser(StringParser),
-	}
-
 	return func(command *Command) (*Command, error) {
-		argument, err := option.Apply(argument, options...)
+		argument, err := newArgument(name, description, options...)
 		if err != nil {
 			return nil, errors.Wrapf(err, "building arg %q", name)
 		}

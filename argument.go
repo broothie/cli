@@ -3,6 +3,8 @@ package cli
 import (
 	"fmt"
 
+	"github.com/bobg/errors"
+	"github.com/broothie/option"
 	"github.com/samber/lo"
 )
 
@@ -12,6 +14,21 @@ type Argument struct {
 	parser      argParser
 
 	value any
+}
+
+func newArgument(name, description string, options ...option.Option[*Argument]) (*Argument, error) {
+	baseArgument := &Argument{
+		name:        name,
+		description: description,
+		parser:      NewArgParser(StringParser),
+	}
+
+	argument, err := option.Apply(baseArgument, options...)
+	if err != nil {
+		return nil, errors.Wrapf(err, "building argument %q", name)
+	}
+
+	return argument, nil
 }
 
 func (a *Argument) inBrackets() string {

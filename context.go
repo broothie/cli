@@ -8,26 +8,26 @@ import (
 
 var (
 	NotACommandContextError = errors.New("not a command context")
-	FlagNotFoundError       = errors.New("flag not found")
-	ArgumentNotFoundError   = errors.New("argument not found")
+	// FlagNotFoundError       = errors.New("flag not found")
+	ArgumentNotFoundError = errors.New("argument not found")
 )
 
-func FlagValue(ctx context.Context, name string) (any, error) {
+func FlagValue(ctx context.Context, name string) any {
 	command, err := commandFromContext(ctx)
 	if err != nil {
-		return nil, errors.Wrapf(err, "finding flag %q", name)
+		panic(err)
 	}
 
 	flag, found := command.findFlag(name)
 	if !found {
-		return nil, errors.Wrapf(FlagNotFoundError, "finding flag %q", name)
+		panic(err)
 	}
 
 	if flag.value != nil {
-		return flag.value, nil
+		return flag.value
 	}
 
-	return flag.defaultValue, nil
+	return flag.defaultValue
 }
 
 func ArgValue(ctx context.Context, name string) (any, error) {

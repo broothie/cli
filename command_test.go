@@ -8,7 +8,7 @@ import (
 )
 
 func TestCommand_root(t *testing.T) {
-	command, err := New("root", "", AddSubCmd("child", ""))
+	command, err := NewCommand("root", "", AddSubCmd("child", ""))
 	require.NoError(t, err)
 
 	require.NotEmpty(t, command.subCommands)
@@ -19,7 +19,7 @@ func TestCommand_root(t *testing.T) {
 }
 
 func TestCommand_hasParent(t *testing.T) {
-	command, err := New("root", "", AddSubCmd("child", ""))
+	command, err := NewCommand("root", "", AddSubCmd("child", ""))
 	require.NoError(t, err)
 
 	require.NotEmpty(t, command.subCommands)
@@ -30,7 +30,7 @@ func TestCommand_hasParent(t *testing.T) {
 }
 
 func TestCommand_qualifiedName(t *testing.T) {
-	command, err := New("root", "",
+	command, err := NewCommand("root", "",
 		AddSubCmd("child", "",
 			AddSubCmd("grandchild", ""),
 		),
@@ -49,7 +49,7 @@ func TestCommand_qualifiedName(t *testing.T) {
 }
 
 func TestCommand_findVersion(t *testing.T) {
-	command, err := New("root", "",
+	command, err := NewCommand("root", "",
 		SetVersion("v0.1.0"),
 		AddSubCmd("child", "",
 			AddSubCmd("grandchild", "",

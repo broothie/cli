@@ -3,6 +3,8 @@ package cli
 import (
 	"fmt"
 
+	"github.com/bobg/errors"
+	"github.com/broothie/option"
 	"github.com/samber/lo"
 )
 
@@ -17,6 +19,22 @@ type Flag struct {
 	defaultValue any
 
 	value any
+}
+
+func newFlag(name, description string, options ...option.Option[*Flag]) (*Flag, error) {
+	baseFlag := &Flag{
+		name:         name,
+		description:  description,
+		parser:       NewArgParser(StringParser),
+		defaultValue: "",
+	}
+
+	flag, err := option.Apply(baseFlag, options...)
+	if err != nil {
+		return nil, errors.Wrapf(err, "building flag %q", name)
+	}
+
+	return flag, nil
 }
 
 func (f *Flag) isHelp() bool {
