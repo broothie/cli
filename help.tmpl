@@ -1,10 +1,10 @@
 {{.RootName}} {{.Version}} {{.RootDescription}}
 
 Usage:
-    {{.QualifiedName}} [flags] [command] {{.ArgumentList}}
+    {{.QualifiedName}} {{- if .Flags }} [flags]{{ end -}} {{- if .SubCommands }} [subcommands]{{ end }} {{.ArgumentList}}
 
 {{ if .SubCommands -}}
-Commands:
+SubCommands:
 {{.SubCommandsTable}}
 {{ end -}}
 

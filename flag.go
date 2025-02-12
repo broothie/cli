@@ -29,18 +29,18 @@ func (f *Flag) isBool() bool {
 	return isBoolParser(f.valueParser)
 }
 
-func FlagValue(ctx context.Context, name string) any {
+func FlagValue(ctx context.Context, name string) (any, bool) {
 	cmd := commandFromContext(ctx)
 	flag, found := cmd.findFlag(name)
 	if !found {
-		panic(fmt.Sprintf("no flag with name %q", name))
+		return nil, false
 	}
 
 	if flag.value != nil {
-		return flag.value
+		return flag.value, true
 	}
 
-	return flag.defaultValue
+	return flag.defaultValue, true
 }
 
 func (c *Command) findFlag(name string) (*Flag, bool) {
