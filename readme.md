@@ -2,6 +2,7 @@
 
 ## To Do
 
+- [ ] Validate elements
 - [ ] Parse equal-sign flags
 - [ ] Add tests
 - [ ] Tab completion
