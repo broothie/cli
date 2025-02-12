@@ -97,7 +97,7 @@ func (p *parser) processLongFlag() error {
 		return errors.Wrapf(MissingFlagValueError, "flag %q", current)
 	}
 
-	value, err := flag.valueParser(next)
+	value, err := flag.parser.Parse(next)
 	if err != nil {
 		return errors.Wrapf(err, "parsing provided value %q for flag %q", next, current)
 	}
@@ -145,7 +145,7 @@ func (p *parser) processShortFlag(short rune) (bool, error) {
 		return false, errors.Wrapf(MissingFlagValueError, "flag %q", dashifyShort(short))
 	}
 
-	value, err := flag.valueParser(next)
+	value, err := flag.parser.Parse(next)
 	if err != nil {
 		return false, errors.Wrapf(err, "parsing provided value %q for flag %q", next, dashifyShort(short))
 	}
@@ -165,7 +165,7 @@ func (p *parser) processArg() error {
 
 	current, _ := p.current()
 	argument := p.command.arguments[p.argumentIndex]
-	value, err := argument.valueParser(current)
+	value, err := argument.parser.Parse(current)
 	if err != nil {
 		return errors.Wrapf(err, "parsing provided value %q for argument %d", current, p.argumentIndex+1)
 	}

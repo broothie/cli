@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/samber/lo"
 )
@@ -14,7 +13,7 @@ type Flag struct {
 	description  string
 	aliases      []string
 	shorts       []rune
-	valueParser  ValueParser
+	parser       argParser
 	defaultValue any
 
 	value any
@@ -25,7 +24,7 @@ func (f *Flag) isHelp() bool {
 }
 
 func (f *Flag) isBool() bool {
-	return isBoolParser(f.valueParser)
+	return isBoolParser(f.parser)
 }
 
 func (c *Command) findFlag(name string) (*Flag, bool) {
@@ -44,6 +43,7 @@ func dashifyShort(short rune) string {
 	return fmt.Sprintf("-%c", short)
 }
 
-func isBoolParser(valueParser ValueParser) bool {
-	return reflect.ValueOf(valueParser).Pointer() == reflect.ValueOf(BoolParser).Pointer()
+func isBoolParser(parser argParser) bool {
+	_, isBool := parser.Type().(bool)
+	return isBool
 }

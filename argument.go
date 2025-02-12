@@ -9,7 +9,7 @@ import (
 type Argument struct {
 	name        string
 	description string
-	valueParser ValueParser
+	parser      argParser
 
 	value any
 }

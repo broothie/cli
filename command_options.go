@@ -43,7 +43,7 @@ func AddFlag(name, description string, options ...option.Option[*Flag]) option.F
 	flag := &Flag{
 		name:         name,
 		description:  description,
-		valueParser:  StringParser,
+		parser:       NewArgParser(StringParser),
 		defaultValue: "",
 	}
 
@@ -62,7 +62,7 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 	argument := &Argument{
 		name:        name,
 		description: description,
-		valueParser: StringParser,
+		parser:      NewArgParser(StringParser),
 	}
 
 	return func(command *Command) (*Command, error) {
@@ -77,6 +77,6 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 }
 
 func AddHelpFlag(options ...option.Option[*Flag]) option.Func[*Command] {
-	defaultOptions := option.NewOptions(SetFlagDefault(false))
+	defaultOptions := option.NewOptions(SetFlagDefaultAndParser(false, BoolParser))
 	return AddFlag(helpFlagName, "Print help", append(defaultOptions, options...)...)
 }

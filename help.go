@@ -97,6 +97,7 @@ func (h helpContext) ArgumentTable() (string, error) {
 			"",
 			argument.inBrackets(),
 			argument.description,
+			fmt.Sprintf("(type: %T)", argument.parser.Type()),
 		}
 	}))
 }
@@ -115,7 +116,7 @@ func (h helpContext) FlagTable() (string, error) {
 			strings.Join(longs, " "),
 			shorts,
 			flag.description,
-			fmt.Sprintf("(type %T, default %q)", flag.defaultValue, fmt.Sprint(flag.defaultValue)),
+			fmt.Sprintf("(type: %T, default: %q)", flag.parser.Type(), fmt.Sprint(flag.defaultValue)),
 		}
 	}))
 }
