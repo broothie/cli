@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"context"
 	"fmt"
 	"reflect"
 
@@ -27,20 +26,6 @@ func (f *Flag) isHelp() bool {
 
 func (f *Flag) isBool() bool {
 	return isBoolParser(f.valueParser)
-}
-
-func FlagValue(ctx context.Context, name string) (any, bool) {
-	cmd := commandFromContext(ctx)
-	flag, found := cmd.findFlag(name)
-	if !found {
-		return nil, false
-	}
-
-	if flag.value != nil {
-		return flag.value, true
-	}
-
-	return flag.defaultValue, true
 }
 
 func (c *Command) findFlag(name string) (*Flag, bool) {

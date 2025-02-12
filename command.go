@@ -80,13 +80,3 @@ func (c *Command) findVersion() string {
 
 	return c.version
 }
-
-var commandContextKey struct{}
-
-func (c *Command) onContext(parent context.Context) context.Context {
-	return context.WithValue(parent, commandContextKey, c)
-}
-
-func commandFromContext(ctx context.Context) *Command {
-	return ctx.Value(commandContextKey).(*Command)
-}

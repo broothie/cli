@@ -21,7 +21,16 @@ var rawHelpTemplate string
 var helpTemplate = template.Must(template.New("help").Parse(rawHelpTemplate))
 
 func helpHandler(ctx context.Context) error {
-	return commandFromContext(ctx).renderHelp(os.Stdout)
+	command, err := commandFromContext(ctx)
+	if err != nil {
+		return errors.Wrap(err, "getting command for help")
+	}
+
+	if err := command.renderHelp(os.Stdout); err != nil {
+		return errors.Wrap(err, "rendering help")
+	}
+
+	return nil
 }
 
 func (c *Command) helpContext() helpContext {
