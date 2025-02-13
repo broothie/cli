@@ -1,4 +1,4 @@
-{{.RootName}} {{.Version}} {{.RootDescription}}
+{{.RootName}}{{ if .Version }} {{.Version}}{{ end }}: {{.RootDescription}}
 
 Usage:
     {{.QualifiedName}} {{- if .Flags }} [flags]{{ end -}} {{- if .SubCommands }} [subcommands]{{ end }} {{.ArgumentList}}
