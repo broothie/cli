@@ -42,7 +42,10 @@ func Test_git(t *testing.T) {
 				return func(ctx context.Context) error {
 					called()
 
-					assert.Equal(t, "/path/to/something", FlagValue(ctx, "git-dir"))
+					gitDir, err := FlagValue[string](ctx, "git-dir")
+					assert.NoError(t, err)
+					assert.Equal(t, "/path/to/something", gitDir)
+
 					return nil
 				}
 			},
@@ -63,7 +66,11 @@ func Test_git(t *testing.T) {
 				called := ensureCalled(t)
 				return func(ctx context.Context) error {
 					called()
-					assert.Equal(t, "a commit message", FlagValue(ctx, "message"))
+
+					message, err := FlagValue[string](ctx, "message")
+					assert.NoError(t, err)
+					assert.Equal(t, "a commit message", message)
+
 					return nil
 				}
 			},
@@ -74,8 +81,15 @@ func Test_git(t *testing.T) {
 				called := ensureCalled(t)
 				return func(ctx context.Context) error {
 					called()
-					assert.False(t, FlagValue(ctx, "all").(bool))
-					assert.Equal(t, "a commit message", FlagValue(ctx, "message"))
+
+					isAll, err := FlagValue[bool](ctx, "all")
+					assert.NoError(t, err)
+					assert.False(t, isAll)
+
+					message, err := FlagValue[string](ctx, "message")
+					assert.NoError(t, err)
+					assert.Equal(t, "a commit message", message)
+
 					return nil
 				}
 			},
@@ -86,8 +100,15 @@ func Test_git(t *testing.T) {
 				called := ensureCalled(t)
 				return func(ctx context.Context) error {
 					called()
-					assert.True(t, FlagValue(ctx, "all").(bool))
-					assert.Equal(t, "a commit message", FlagValue(ctx, "message"))
+
+					isAll, err := FlagValue[bool](ctx, "all")
+					assert.NoError(t, err)
+					assert.True(t, isAll)
+
+					message, err := FlagValue[string](ctx, "message")
+					assert.NoError(t, err)
+					assert.Equal(t, "a commit message", message)
+
 					return nil
 				}
 			},
@@ -99,7 +120,7 @@ func Test_git(t *testing.T) {
 				return func(ctx context.Context) error {
 					called()
 
-					branch, err := ArgValue(ctx, "branch")
+					branch, err := ArgValue[string](ctx, "branch")
 					assert.NoError(t, err)
 					assert.Equal(t, "some-branch", branch)
 
@@ -114,11 +135,14 @@ func Test_git(t *testing.T) {
 				return func(ctx context.Context) error {
 					called()
 
-					branch, err := ArgValue(ctx, "branch")
+					branch, err := ArgValue[string](ctx, "branch")
 					assert.NoError(t, err)
 					assert.Equal(t, "some-branch", branch)
 
-					assert.True(t, FlagValue(ctx, "new-branch").(bool))
+					isNewBranch, err := FlagValue[bool](ctx, "new-branch")
+					assert.NoError(t, err)
+					assert.True(t, isNewBranch)
+
 					return nil
 				}
 			},
