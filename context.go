@@ -8,40 +8,44 @@ import (
 
 var (
 	NotACommandContextError = errors.New("not a command context")
-	// FlagNotFoundError       = errors.New("flag not found")
-	ArgumentNotFoundError = errors.New("argument not found")
+	FlagNotFoundError       = errors.New("flag not found")
+	ArgumentNotFoundError   = errors.New("argument not found")
 )
 
-func FlagValue(ctx context.Context, name string) any {
+func FlagValue[T any](ctx context.Context, name string) (T, error) {
+	var zero T
+
 	command, err := commandFromContext(ctx)
 	if err != nil {
-		panic(err)
+		return zero, errors.Wrapf(err, "finding flag %q", name)
 	}
 
 	flag, found := command.findFlag(name)
 	if !found {
-		panic(err)
+		return zero, errors.Wrapf(FlagNotFoundError, "finding flag %q", name)
 	}
 
 	if flag.value != nil {
-		return flag.value
+		return flag.value.(T), nil
 	}
 
-	return flag.defaultValue
+	return flag.defaultValue.(T), nil
 }
 
-func ArgValue(ctx context.Context, name string) (any, error) {
+func ArgValue[T any](ctx context.Context, name string) (T, error) {
+	var zero T
+
 	command, err := commandFromContext(ctx)
 	if err != nil {
-		return nil, errors.Wrapf(err, "finding argument %q", name)
+		return zero, errors.Wrapf(err, "finding argument %q", name)
 	}
 
 	arg, found := command.findArg(name)
 	if !found {
-		return nil, errors.Wrapf(ArgumentNotFoundError, "finding argument %q", name)
+		return zero, errors.Wrapf(ArgumentNotFoundError, "finding argument %q", name)
 	}
 
-	return arg.value, nil
+	return arg.value.(T), nil
 }
 
 var commandContextKey struct{}

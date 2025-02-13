@@ -35,7 +35,7 @@ func NewCommand(name, description string, options ...option.Option[*Command]) (*
 		return nil, errors.Wrapf(err, "building command %q", name)
 	}
 
-	if err := command.validate(); err != nil {
+	if err := command.validateConfig(); err != nil {
 		return nil, errors.Wrapf(err, "invalid command %q", name)
 	}
 

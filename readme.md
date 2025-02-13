@@ -2,9 +2,8 @@
 
 ## To Do
 
-- [ ] Validate elements
+- [ ] Audit bare `err` returns
 - [ ] Parse equal-sign flags
-- [ ] Add tests
 - [ ] Tab completion
 - [ ] Allow variadic arguments
 - [ ] Allow slice and map based flags?

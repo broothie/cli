@@ -49,6 +49,10 @@ func (p *parser) parse(ctx context.Context) error {
 		}
 	}
 
+	if err := p.command.validateInput(); err != nil {
+		return err
+	}
+
 	return p.command.runHandler(ctx)
 }
 

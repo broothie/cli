@@ -4,7 +4,7 @@ import (
 	"github.com/bobg/errors"
 )
 
-func (c *Command) validate() error {
+func (c *Command) validateConfig() error {
 	validations := []func() error{
 		c.validateNoDuplicateSubCommands,
 		c.validateEitherCommandsOrArguments,
