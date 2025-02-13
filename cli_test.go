@@ -50,6 +50,21 @@ func Test_git(t *testing.T) {
 				}
 			},
 		},
+		"long flag is parsed with equal sign": {
+			rawArgs: []string{"--git-dir=/path/to/something"},
+			gitHandler: func(t *testing.T) Handler {
+				called := ensureCalled(t)
+				return func(ctx context.Context) error {
+					called()
+
+					gitDir, err := FlagValue[string](ctx, "git-dir")
+					assert.NoError(t, err)
+					assert.Equal(t, "/path/to/something", gitDir)
+
+					return nil
+				}
+			},
+		},
 		"sub-command handler is called": {
 			rawArgs: []string{"commit"},
 			commitHandler: func(t *testing.T) Handler {
@@ -77,6 +92,25 @@ func Test_git(t *testing.T) {
 		},
 		"flag short is parsed": {
 			rawArgs: []string{"commit", "-m", "a commit message"},
+			commitHandler: func(t *testing.T) Handler {
+				called := ensureCalled(t)
+				return func(ctx context.Context) error {
+					called()
+
+					isAll, err := FlagValue[bool](ctx, "all")
+					assert.NoError(t, err)
+					assert.False(t, isAll)
+
+					message, err := FlagValue[string](ctx, "message")
+					assert.NoError(t, err)
+					assert.Equal(t, "a commit message", message)
+
+					return nil
+				}
+			},
+		},
+		"flag short with equal sign is parsed": {
+			rawArgs: []string{"commit", "-m=a commit message"},
 			commitHandler: func(t *testing.T) Handler {
 				called := ensureCalled(t)
 				return func(ctx context.Context) error {

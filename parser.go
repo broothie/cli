@@ -14,9 +14,10 @@ const (
 )
 
 var (
-	InvalidFlagError      = errors.New("invalid flag")
-	MissingFlagValueError = errors.New("missing flag value")
-	TooManyArgumentsError = errors.New("too many arguments")
+	InvalidFlagError        = errors.New("invalid flag")
+	MissingFlagValueError   = errors.New("missing flag value")
+	TooManyArgumentsError   = errors.New("too many arguments")
+	FlagGroupWithEqualError = errors.New("short flags with equal signs cannot be grouped")
 )
 
 type parser struct {
@@ -81,6 +82,10 @@ func (p *parser) processFlag() error {
 func (p *parser) processLongFlag() error {
 	current, _ := p.current()
 
+	if strings.Contains(current, "=") {
+		return p.processLongFlagWithEqual()
+	}
+
 	flag, found := p.command.findLongFlag(strings.TrimPrefix(current, longFlagPrefix))
 	if !found {
 		return errors.Wrapf(InvalidFlagError, "no flag found for %q", current)
@@ -111,9 +116,36 @@ func (p *parser) processLongFlag() error {
 	return nil
 }
 
-func (p *parser) processShortFlagGroup() error {
-	incrementIndexBy := 1
+func (p *parser) processLongFlagWithEqual() error {
 	current, _ := p.current()
+
+	rawFlag, rawValue, _ := strings.Cut(current, "=")
+	flag, found := p.command.findLongFlag(strings.TrimPrefix(rawFlag, longFlagPrefix))
+	if !found {
+		return errors.Wrapf(InvalidFlagError, "no flag found for %q", rawFlag)
+	}
+
+	if flag.isHelp() {
+		p.command.handler = helpHandler
+	}
+
+	value, err := flag.parser.Parse(rawValue)
+	if err != nil {
+		return errors.Wrapf(err, "parsing provided value %q for flag %q", rawValue, rawFlag)
+	}
+
+	flag.value = value
+	p.index += 1
+	return nil
+}
+
+func (p *parser) processShortFlagGroup() error {
+	current, _ := p.current()
+	if strings.Contains(current, "=") {
+		return p.processShortFlagWithEqual()
+	}
+
+	incrementIndexBy := 1
 	for _, short := range strings.TrimPrefix(current, flagPrefix) {
 		wasValueProcessed, err := p.processShortFlag(short)
 		if err != nil {
@@ -156,6 +188,35 @@ func (p *parser) processShortFlag(short rune) (bool, error) {
 
 	flag.value = value
 	return true, nil
+}
+
+func (p *parser) processShortFlagWithEqual() error {
+	current, _ := p.current()
+
+	rawFlag, rawValue, _ := strings.Cut(current, "=")
+	flagName := strings.TrimPrefix(rawFlag, flagPrefix)
+	if len(flagName) != 1 {
+		return errors.Wrapf(FlagGroupWithEqualError, "flag %q", current)
+	}
+
+	short := rune(flagName[0])
+	flag, found := p.command.findShortFlag(short)
+	if !found {
+		return errors.Wrapf(InvalidFlagError, "no short flag found for %q", dashifyShort(short))
+	}
+
+	if flag.isHelp() {
+		p.command.handler = helpHandler
+	}
+
+	value, err := flag.parser.Parse(rawValue)
+	if err != nil {
+		return errors.Wrapf(err, "parsing provided value %q for flag %q", rawValue, dashifyShort(short))
+	}
+
+	flag.value = value
+	p.index += 1
+	return nil
 }
 
 func (p *parser) processCommand(ctx context.Context, command *Command) error {
