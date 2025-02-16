@@ -28,6 +28,7 @@ func TestCommand_renderHelp(t *testing.T) {
 				AddFlagShort('s'),
 				SetFlagDefaultAndParser(CustomType{Field: "field default"}, func(s string) (CustomType, error) { return CustomType{Field: s}, nil }),
 			),
+			AddFlag("hidden-flag", "some hidden flag", SetFlagHidden()),
 			AddArg("some-arg", "some arg",
 				SetArgParser(TimeLayoutParser(time.RubyDate)),
 			),

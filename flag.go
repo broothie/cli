@@ -15,6 +15,7 @@ type Flag struct {
 	description  string
 	aliases      []string
 	shorts       []rune
+	hidden       bool
 	parser       argParser
 	defaultValue any
 

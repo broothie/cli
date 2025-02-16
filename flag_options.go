@@ -19,6 +19,13 @@ func AddFlagShort(short rune) option.Func[*Flag] {
 	}
 }
 
+func SetFlagHidden() option.Func[*Flag] {
+	return func(flag *Flag) (*Flag, error) {
+		flag.hidden = true
+		return flag, nil
+	}
+}
+
 func SetFlagDefault[T Parseable](defaultValue T) option.Func[*Flag] {
 	return func(flag *Flag) (*Flag, error) {
 		argParser, err := argParserFromParseable[T]()

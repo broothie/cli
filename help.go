@@ -103,7 +103,11 @@ func (h helpContext) ArgumentTable() (string, error) {
 }
 
 func (h helpContext) FlagTable() (string, error) {
-	return tableToString(lo.Map(h.Flags(), func(flag *Flag, _ int) []string {
+	return tableToString(lo.FilterMap(h.Flags(), func(flag *Flag, _ int) ([]string, bool) {
+		if flag.hidden {
+			return nil, false
+		}
+
 		longs := lo.Map(append([]string{flag.name}, flag.aliases...), func(long string, _ int) string { return fmt.Sprintf("--%s", long) })
 
 		shorts := ""
@@ -117,7 +121,7 @@ func (h helpContext) FlagTable() (string, error) {
 			shorts,
 			flag.description,
 			fmt.Sprintf("(type: %T, default: %q)", flag.parser.Type(), fmt.Sprint(flag.defaultValue)),
-		}
+		}, true
 	}))
 }
 
