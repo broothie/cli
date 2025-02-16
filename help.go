@@ -104,7 +104,7 @@ func (h helpContext) ArgumentTable() (string, error) {
 
 func (h helpContext) FlagTable() (string, error) {
 	return tableToString(lo.FilterMap(h.Flags(), func(flag *Flag, _ int) ([]string, bool) {
-		if flag.hidden {
+		if flag.isHidden {
 			return nil, false
 		}
 

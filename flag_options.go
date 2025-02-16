@@ -19,9 +19,16 @@ func AddFlagShort(short rune) option.Func[*Flag] {
 	}
 }
 
-func SetFlagHidden() option.Func[*Flag] {
+func SetFlagIsHidden(isHidden bool) option.Func[*Flag] {
 	return func(flag *Flag) (*Flag, error) {
-		flag.hidden = true
+		flag.isHidden = isHidden
+		return flag, nil
+	}
+}
+
+func SetFlagIsInherited(isInherited bool) option.Func[*Flag] {
+	return func(flag *Flag) (*Flag, error) {
+		flag.isInherited = isInherited
 		return flag, nil
 	}
 }

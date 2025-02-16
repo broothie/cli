@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"github.com/bobg/errors"
 	"github.com/broothie/option"
 )
 
@@ -55,7 +54,7 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 	return func(command *Command) (*Command, error) {
 		argument, err := newArgument(name, description, options...)
 		if err != nil {
-			return nil, errors.Wrapf(err, "building arg %q", name)
+			return nil, err
 		}
 
 		command.arguments = append(command.arguments, argument)
@@ -64,6 +63,6 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 }
 
 func AddHelpFlag(options ...option.Option[*Flag]) option.Func[*Command] {
-	defaultOptions := option.NewOptions(SetFlagDefaultAndParser(false, BoolParser))
-	return AddFlag(helpFlagName, "Print help", append(defaultOptions, options...)...)
+	defaultOptions := option.NewOptions(SetFlagDefault(false))
+	return AddFlag(helpFlagName, "Print help.", append(defaultOptions, options...)...)
 }

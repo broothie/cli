@@ -15,7 +15,8 @@ type Flag struct {
 	description  string
 	aliases      []string
 	shorts       []rune
-	hidden       bool
+	isHidden     bool
+	isInherited  bool
 	parser       argParser
 	defaultValue any
 
@@ -47,12 +48,17 @@ func (f *Flag) isBool() bool {
 }
 
 func (c *Command) findFlag(name string) (*Flag, bool) {
-	if flag, found := lo.Find(c.flags, func(flag *Flag) bool { return flag.name == name }); found {
-		return flag, true
-	}
+	return c.findFlagUpToRoot(func(flag *Flag) bool { return flag.name == name })
+}
 
-	if c.hasParent() {
-		return c.parent.findFlag(name)
+func (c *Command) findFlagUpToRoot(predicate func(*Flag) bool) (*Flag, bool) {
+	for current := c; current != nil; current = current.parent {
+		currentIsSelf := current == c
+
+		flag, found := lo.Find(c.flags, predicate)
+		if found && (flag.isInherited || currentIsSelf) {
+			return flag, true
+		}
 	}
 
 	return nil, false

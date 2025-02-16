@@ -28,7 +28,7 @@ func TestCommand_renderHelp(t *testing.T) {
 				AddFlagShort('s'),
 				SetFlagDefaultAndParser(CustomType{Field: "field default"}, func(s string) (CustomType, error) { return CustomType{Field: s}, nil }),
 			),
-			AddFlag("hidden-flag", "some hidden flag", SetFlagHidden()),
+			AddFlag("hidden-flag", "some hidden flag", SetFlagIsHidden(true)),
 			AddArg("some-arg", "some arg",
 				SetArgParser(TimeLayoutParser(time.RubyDate)),
 			),
@@ -50,8 +50,8 @@ func TestCommand_renderHelp(t *testing.T) {
 				  <some-arg>  some arg  (type: time.Time)
 				
 				Flags:
-				  --help                    Print help  (type: bool, default: "false")
-				  --some-flag --a-flag  -s  some flag   (type: cli.CustomType, default: "field=\"field default\"")
+				  --help                    Print help.  (type: bool, default: "false")
+				  --some-flag --a-flag  -s  some flag    (type: cli.CustomType, default: "field=\"field default\"")
 				
 			`),
 			buffer.String(),
@@ -86,8 +86,8 @@ func TestCommand_renderHelp(t *testing.T) {
 				  some-command  some command
 				
 				Flags:
-				  --help                    Print help  (type: bool, default: "false")
-				  --some-flag --a-flag  -s  some flag   (type: cli.CustomType, default: "field=\"field default\"")
+				  --help                    Print help.  (type: bool, default: "false")
+				  --some-flag --a-flag  -s  some flag    (type: cli.CustomType, default: "field=\"field default\"")
 				
 			`),
 			buffer.String(),

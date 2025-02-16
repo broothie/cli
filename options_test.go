@@ -45,7 +45,7 @@ func Test_options(t *testing.T) {
 
 		helpFlag := httpCommand.flags[0]
 		assert.Equal(t, "help", helpFlag.name)
-		assert.Equal(t, "Print help", helpFlag.description)
+		assert.Equal(t, "Print help.", helpFlag.description)
 		assert.Equal(t, false, helpFlag.defaultValue)
 		assert.Nil(t, helpFlag.value)
 		assert.Equal(t, reflect.ValueOf(BoolParser).Pointer(), reflect.ValueOf(helpFlag.parser).Pointer())

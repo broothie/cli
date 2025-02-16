@@ -242,29 +242,11 @@ func (p *parser) processArg() error {
 }
 
 func (c *Command) findLongFlag(name string) (*Flag, bool) {
-	flag, found := lo.Find(c.flags, func(flag *Flag) bool { return flag.name == name || lo.Contains(flag.aliases, name) })
-	if found {
-		return flag, true
-	}
-
-	if c.hasParent() {
-		return c.parent.findLongFlag(name)
-	}
-
-	return nil, false
+	return c.findFlagUpToRoot(func(flag *Flag) bool { return flag.name == name || lo.Contains(flag.aliases, name) })
 }
 
 func (c *Command) findShortFlag(short rune) (*Flag, bool) {
-	flag, found := lo.Find(c.flags, func(flag *Flag) bool { return lo.Contains(flag.shorts, short) })
-	if found {
-		return flag, true
-	}
-
-	if c.hasParent() {
-		return c.parent.findShortFlag(short)
-	}
-
-	return nil, false
+	return c.findFlagUpToRoot(func(flag *Flag) bool { return lo.Contains(flag.shorts, short) })
 }
 
 func (p *parser) current() (string, bool) {
