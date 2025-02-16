@@ -1,3 +1,5 @@
+github.com/MakeNowJust/heredoc/v2 v2.0.1 h1:rlCHh70XXXv7toz95ajQWOWQnN4WNLt0TdpZYIR/J6A=
+github.com/MakeNowJust/heredoc/v2 v2.0.1/go.mod h1:6/2Abh5s+hc3g9nbWLe9ObDIOhaRrqsyY9MWy+4JdRM=
 github.com/bobg/errors v1.1.0 h1:gsVanPzJMpZQpwY+27/GQYElZez5CuMYwiIpk2A3RGw=
 github.com/bobg/errors v1.1.0/go.mod h1:Q4775qBZpnte7EGFJqmvnlB1U4pkI1XmU3qxqdp7Zcc=
 github.com/broothie/option v0.1.0 h1:5l6qdv9g1Ajxn7821brKVzOZxIjlVB0gA1MU8QbW8Fw=
