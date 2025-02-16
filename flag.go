@@ -64,6 +64,21 @@ func (c *Command) findFlagUpToRoot(predicate func(*Flag) bool) (*Flag, bool) {
 	return nil, false
 }
 
+func (c *Command) flagsUpToRoot() []*Flag {
+	flags := c.flags
+	flagSet := lo.Associate(flags, func(flag *Flag) (string, bool) { return flag.name, true })
+
+	for current := c.parent; current != nil; current = current.parent {
+		flags = append(flags, lo.Filter(current.flags, func(flag *Flag, _ int) bool {
+			defer func() { flagSet[flag.name] = true }()
+
+			return flag.isInherited && !flagSet[flag.name]
+		})...)
+	}
+
+	return flags
+}
+
 func dashifyShort(short rune) string {
 	return fmt.Sprintf("-%c", short)
 }

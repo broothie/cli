@@ -74,7 +74,7 @@ func (h helpContext) Arguments() []*Argument {
 }
 
 func (h helpContext) Flags() []*Flag {
-	return h.command.flags
+	return h.command.flagsUpToRoot()
 }
 
 func (h helpContext) SubCommandsTable() (string, error) {

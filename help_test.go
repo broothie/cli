@@ -98,6 +98,7 @@ func TestCommand_renderHelp(t *testing.T) {
 		command, err := NewCommand("test", "test command",
 			SetVersion("v1.2.3-rc10"),
 			AddHelpFlag(),
+			AddFlag("inherited", "inherited", SetFlagIsInherited(true)),
 			AddSubCmd("some-command", "some command",
 				AddFlag("some-flag", "some flag"),
 				AddArg("some-arg", "some arg"),
@@ -121,6 +122,7 @@ func TestCommand_renderHelp(t *testing.T) {
 				
 				Flags:
 				  --some-flag    some flag  (type: string, default: "")
+				  --inherited    inherited  (type: string, default: "")
 				
 			`),
 			buffer.String(),
