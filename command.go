@@ -23,6 +23,7 @@ type Command struct {
 	handler     Handler
 }
 
+// NewCommand creates a new command.
 func NewCommand(name, description string, options ...option.Option[*Command]) (*Command, error) {
 	baseCommand := &Command{
 		name:        name,
@@ -42,6 +43,7 @@ func NewCommand(name, description string, options ...option.Option[*Command]) (*
 	return command, nil
 }
 
+// Run creates and runs a command using os.Args as the arguments and context.Background as the context.
 func Run(name, description string, options ...option.Option[*Command]) error {
 	command, err := NewCommand(name, description, options...)
 	if err != nil {
@@ -51,6 +53,7 @@ func Run(name, description string, options ...option.Option[*Command]) error {
 	return command.Run(context.Background(), os.Args[1:])
 }
 
+// Run runs the command.
 func (c *Command) Run(ctx context.Context, rawArgs []string) error {
 	return c.newParser(rawArgs).parse(ctx)
 }

@@ -10,40 +10,49 @@ import (
 
 var NotParseableError = errors.New("type not parseable")
 
+// Parseable is a type that can be parsed from a string.
 type Parseable interface {
 	string | bool | int | float64 | time.Time | time.Duration | *url.URL
 }
 
+// StringParser parses a string into a string.
 func StringParser(s string) (string, error) {
 	return s, nil
 }
 
+// BoolParser parses a string into a bool.
 func BoolParser(s string) (bool, error) {
 	return strconv.ParseBool(s)
 }
 
+// IntParser parses a string into an int.
 func IntParser(s string) (int, error) {
 	return strconv.Atoi(s)
 }
 
+// Float64Parser parses a string into a float64.
 func Float64Parser(s string) (float64, error) {
 	return strconv.ParseFloat(s, 64)
 }
 
+// TimeParser parses a string into a time.Time.
 func TimeParser(s string) (time.Time, error) {
 	return TimeLayoutParser(time.RFC3339)(s)
 }
 
+// TimeLayoutParser parses a string into a time.Time using a specific time layout.
 func TimeLayoutParser(timeLayout string) ArgParser[time.Time] {
 	return func(s string) (time.Time, error) {
 		return time.Parse(timeLayout, s)
 	}
 }
 
+// DurationParser parses a string into a time.Duration.
 func DurationParser(s string) (time.Duration, error) {
 	return time.ParseDuration(s)
 }
 
+// URLParser parses a string into a *url.URL.
 func URLParser(s string) (*url.URL, error) {
 	return url.Parse(s)
 }

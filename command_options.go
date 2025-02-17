@@ -1,9 +1,8 @@
 package cli
 
-import (
-	"github.com/broothie/option"
-)
+import "github.com/broothie/option"
 
+// SetVersion sets the version of the command.
 func SetVersion(version string) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
 		command.version = version
@@ -11,6 +10,7 @@ func SetVersion(version string) option.Func[*Command] {
 	}
 }
 
+// AddAlias adds an alias to the command.
 func AddAlias(alias string) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
 		command.aliases = append(command.aliases, alias)
@@ -18,6 +18,7 @@ func AddAlias(alias string) option.Func[*Command] {
 	}
 }
 
+// SetHandler sets the handler of the command.
 func SetHandler(handler Handler) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
 		command.handler = handler
@@ -25,6 +26,7 @@ func SetHandler(handler Handler) option.Func[*Command] {
 	}
 }
 
+// AddSubCmd adds a subcommand to the command.
 func AddSubCmd(name, description string, options ...option.Option[*Command]) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
 		subCommand, err := NewCommand(name, description, options...)
@@ -38,6 +40,7 @@ func AddSubCmd(name, description string, options ...option.Option[*Command]) opt
 	}
 }
 
+// AddFlag adds a flag to the command.
 func AddFlag(name, description string, options ...option.Option[*Flag]) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
 		flag, err := newFlag(name, description, options...)
@@ -50,6 +53,7 @@ func AddFlag(name, description string, options ...option.Option[*Flag]) option.F
 	}
 }
 
+// AddArg adds an argument to the command.
 func AddArg(name, description string, options ...option.Option[*Argument]) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
 		argument, err := newArgument(name, description, options...)
@@ -62,6 +66,7 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 	}
 }
 
+// AddHelpFlag adds a help flag to the command.
 func AddHelpFlag(options ...option.Option[*Flag]) option.Func[*Command] {
 	defaultOptions := option.NewOptions(SetFlagDefault(false))
 	return AddFlag(helpFlagName, "Print help.", append(defaultOptions, options...)...)
