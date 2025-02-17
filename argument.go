@@ -40,9 +40,5 @@ func (c *Command) findArg(name string) (*Argument, bool) {
 		return arg, true
 	}
 
-	if c.hasParent() {
-		return c.parent.findArg(name)
-	}
-
 	return nil, false
 }
