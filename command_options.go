@@ -20,6 +20,13 @@ func AddAlias(alias string) option.Func[*Command] {
 	}
 }
 
+func SetInstallZshTabCompletion(installZshTabCompletion bool) option.Func[*Command] {
+	return func(command *Command) (*Command, error) {
+		command.installZshTabCompletion = installZshTabCompletion
+		return command, nil
+	}
+}
+
 // SetHandler sets the handler of the command.
 func SetHandler(handler Handler) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {

@@ -1,0 +1,36 @@
+#compdef {{.name}}
+
+_{{.name}}() {
+    local line state
+
+    _arguments -C \
+        "1: :->cmds" \
+        "*::arg:->args"
+
+    case "$state" in
+        cmds)
+            _values 'commands' \
+                {{- range .subCommands}}
+                '{{.name}}[{{.description}}]' \
+                {{- end}}
+            ;;
+        args)
+            case $line[1] in
+                {{- range .subCommands}}
+                {{.name}})
+                    _arguments \
+                        {{- range $.flags}}
+                        {{if .shorts}}
+                        "(-{{index .shorts 0}} --{{.name}})"{-{{index .shorts 0}},--{{.name}}}"[{{.description}}]" \
+                        {{else}}
+                        "--{{.name}}[{{.description}}]" \
+                        {{end}}
+                        {{- end}}
+                    ;;
+                {{- end}}
+            esac
+            ;;
+    esac
+}
+
+compdef _{{.name}} {{.name}}

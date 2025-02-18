@@ -15,10 +15,12 @@ import (
 	"github.com/samber/lo"
 )
 
-//go:embed help.tmpl
-var rawHelpTemplate string
+var (
+	//go:embed help.tmpl
+	rawHelpTemplate string
 
-var helpTemplate = template.Must(template.New("help").Parse(rawHelpTemplate))
+	helpTemplate = template.Must(template.New("help").Parse(rawHelpTemplate))
+)
 
 func helpHandler(ctx context.Context) error {
 	command, err := commandFromContext(ctx)
