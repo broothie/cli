@@ -2,6 +2,8 @@ package cli
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"reflect"
 	"testing"
 
@@ -88,4 +90,114 @@ func Test_options(t *testing.T) {
 		assert.Equal(t, reflect.ValueOf(URLParser).Pointer(), reflect.ValueOf(targetArgument.parser).Pointer())
 		assert.Nil(t, targetArgument.value)
 	})
+}
+
+func ExampleSetVersion() {
+	command, _ := NewCommand("server", "An http server.",
+		SetVersion("v0.1.0"),
+	)
+
+	command.renderHelp(os.Stdout)
+	// Output:
+	// server v0.1.0: An http server.
+	//
+	// Usage:
+	//   server
+}
+
+func ExampleSetHandler() {
+	command, _ := NewCommand("server", "An http server.",
+		SetHandler(func(ctx context.Context) error {
+			fmt.Println("running server")
+			return nil
+		}),
+	)
+
+	command.Run(context.Background(), nil)
+	// Output:
+	// running server
+}
+
+func ExampleAddSubCmd() {
+	command, _ := NewCommand("server", "An http server.",
+		AddSubCmd("start", "Start the server"),
+	)
+
+	command.renderHelp(os.Stdout)
+	// Output:
+	// server: An http server.
+	//
+	// Usage:
+	//   server [sub-commands]
+	//
+	// Sub-commands:
+	//   start: Start the server
+}
+
+func ExampleAddFlag() {
+	command, _ := NewCommand("server", "An http server.",
+		AddFlag("port", "Port to run server on",
+			AddFlagShort('p'),
+			SetFlagDefault(3000),
+		),
+	)
+
+	command.renderHelp(os.Stdout)
+	// Output:
+	// server: An http server.
+	//
+	// Usage:
+	//   server [flags]
+	//
+	// Flags:
+	//   --port  -p  Port to run server on  (type: int, default: "3000")
+}
+
+func ExampleAddArg() {
+	command, _ := NewCommand("server", "An http server.",
+		AddArg("port", "Port to run server on", SetArgParser(IntParser)),
+	)
+
+	command.renderHelp(os.Stdout)
+	// Output:
+	// server: An http server.
+	//
+	// Usage:
+	//   server <port>
+	//
+	// Arguments:
+	//   <port>  Port to run server on  (type: int)
+}
+
+func ExampleAddHelpFlag() {
+	command, _ := NewCommand("server", "An http server.",
+		AddHelpFlag(AddFlagShort('h')),
+	)
+
+	command.renderHelp(os.Stdout)
+	// Output:
+	// server: An http server.
+	//
+	// Usage:
+	//   server [flags]
+	//
+	// Flags:
+	//   --help  -h  Print help.  (type: bool, default: "false")
+}
+
+func ExampleAddVersionFlag() {
+	command, _ := NewCommand("server", "An http server.",
+		SetVersion("v0.1.0"),
+		AddVersionFlag(AddFlagShort('V')),
+	)
+
+	command.renderHelp(os.Stdout)
+	// Output:
+	// server v0.1.0: An http server.
+	//
+	// Usage:
+	//   server [flags]
+	//
+	// Flags:
+	//   --version  -V  Print version.  (type: bool, default: "false")
 }

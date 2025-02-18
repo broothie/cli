@@ -80,10 +80,10 @@ func TestCommand_renderHelp(t *testing.T) {
 				test v1.2.3-rc10: test command
 				
 				Usage:
-				  test [flags] [subcommands]
+				  test [flags] [sub-commands]
 				
-				Commands:
-				  some-command  some command
+				Sub-commands:
+				  some-command: some command
 				
 				Flags:
 				  --help                    Print help.  (type: bool, default: "false")

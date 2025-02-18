@@ -2,6 +2,8 @@ package cli
 
 import "github.com/broothie/option"
 
+const versionFlagName = "version"
+
 // SetVersion sets the version of the command.
 func SetVersion(version string) option.Func[*Command] {
 	return func(command *Command) (*Command, error) {
@@ -70,4 +72,9 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 func AddHelpFlag(options ...option.Option[*Flag]) option.Func[*Command] {
 	defaultOptions := option.NewOptions(SetFlagDefault(false))
 	return AddFlag(helpFlagName, "Print help.", append(defaultOptions, options...)...)
+}
+
+func AddVersionFlag(options ...option.Option[*Flag]) option.Func[*Command] {
+	defaultOptions := option.NewOptions(SetFlagDefault(false))
+	return AddFlag(versionFlagName, "Print version.", append(defaultOptions, options...)...)
 }

@@ -81,8 +81,7 @@ func (h helpContext) SubCommandsTable() (string, error) {
 	return tableToString(lo.Map(h.SubCommands(), func(command *Command, _ int) []string {
 		return []string{
 			"",
-			command.name,
-			command.description,
+			fmt.Sprintf("%s: %s", command.name, command.description),
 		}
 	}))
 }
