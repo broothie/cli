@@ -10,9 +10,9 @@ _{{.name}}() {
     case "$state" in
         cmds)
             _values 'commands' \
-                {{- range .subCommands}}
+                {{- range .subCommands }}
                 '{{.name}}[{{.description}}]' \
-                {{- end}}
+                {{- end }}
             ;;
         args)
             case $line[1] in

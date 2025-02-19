@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	_ "embed"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/bobg/errors"
 	"github.com/samber/lo"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -29,7 +31,6 @@ func (c *Command) installZshCompletion() error {
 		return errors.Wrap(err, "finding zsh executable")
 	}
 
-	// Check if completion is already installed
 	out, err := exec.Command(zshPath, "-c", "echo $fpath").Output()
 	if err != nil {
 		return errors.Wrap(err, "getting zsh fpath")
@@ -45,13 +46,8 @@ func (c *Command) installZshCompletion() error {
 		directory := strings.Trim(directory, "()")
 		completionPath := filepath.Join(directory, fmt.Sprintf("_%s", c.name))
 
-		// Check if already installed
-		if _, err := os.Stat(completionPath); err == nil {
+		if err := c.createAndWriteCompletion(completionPath); err == nil {
 			return nil
-		}
-
-		if err := c.createAndWriteCompletion(completionPath); err != nil {
-			return err
 		}
 	}
 
@@ -59,18 +55,68 @@ func (c *Command) installZshCompletion() error {
 }
 
 func (c *Command) createAndWriteCompletion(completionPath string) (err error) {
-	f, err := os.Create(completionPath)
-	if err != nil {
-		return err
-	}
-
+	file, err := os.OpenFile(completionPath, os.O_RDWR|os.O_CREATE, 0666)
 	defer func() {
-		if closeErr := f.Close(); closeErr != nil {
+		if file == nil {
+			return
+		}
+
+		if closeErr := file.Close(); closeErr != nil {
 			err = errors.Join(err, closeErr)
 		}
 	}()
 
-	return c.renderZshAutocompleteScript(f)
+	if os.IsNotExist(err) {
+		if err := c.renderZshAutocompleteScript(file); err != nil {
+			return errors.Wrap(err, "writing tab completion script")
+		}
+	} else if err != nil {
+		return errors.Wrap(err, "opening completion script")
+	}
+
+	group := new(errgroup.Group)
+
+	var fileContents []byte
+	group.Go(func() error {
+		var err error
+		if fileContents, err = io.ReadAll(file); err != nil {
+			return errors.Wrap(err, "reading existing tab completion script")
+		}
+
+		return nil
+	})
+
+	buffer := new(bytes.Buffer)
+	group.Go(func() error {
+		if err := c.renderZshAutocompleteScript(buffer); err != nil {
+			return errors.Wrap(err, "generating tab completion script")
+		}
+
+		return nil
+	})
+
+	if err := group.Wait(); err != nil {
+		return err
+	}
+
+	fmt.Println(buffer.String())
+	fmt.Println("-------------")
+	fmt.Println(string(fileContents))
+
+	if bytes.Equal(buffer.Bytes(), fileContents) {
+		return nil
+	}
+
+	if err := file.Truncate(0); err != nil {
+		return errors.Wrap(err, "truncating existing tab completion script")
+	}
+
+	fmt.Println("writing script", completionPath)
+	if _, err := io.Copy(file, buffer); err != nil {
+		return errors.Wrap(err, "writing tab completion script")
+	}
+
+	return nil
 }
 
 func (c *Command) renderZshAutocompleteScript(w io.Writer) error {
