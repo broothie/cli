@@ -13,16 +13,15 @@ import (
 type Handler func(ctx context.Context) error
 
 type Command struct {
-	parent                  *Command
-	name                    string
-	description             string
-	version                 string
-	aliases                 []string
-	installZshTabCompletion bool
-	subCommands             []*Command
-	flags                   []*Flag
-	arguments               []*Argument
-	handler                 Handler
+	parent      *Command
+	name        string
+	description string
+	version     string
+	aliases     []string
+	subCommands []*Command
+	flags       []*Flag
+	arguments   []*Argument
+	handler     Handler
 }
 
 // NewCommand creates a new command.
@@ -30,7 +29,6 @@ func NewCommand(name, description string, options ...option.Option[*Command]) (*
 	baseCommand := &Command{
 		name:        name,
 		description: description,
-		handler:     helpHandler,
 	}
 
 	command, err := option.Apply(baseCommand, options...)
@@ -61,17 +59,31 @@ func Run(name, description string, options ...option.Option[*Command]) {
 
 // Run runs the command.
 func (c *Command) Run(ctx context.Context, rawArgs []string) error {
-	if c.installZshTabCompletion {
-		if err := c.installZshCompletion(); err != nil {
-			return err
-		}
-	}
-
 	return c.newParser(rawArgs).parse(ctx)
 }
 
 func (c *Command) runHandler(ctx context.Context) error {
+	if c.helpFlagAsserted() {
+		return c.renderHelp(os.Stdout)
+	} else if c.tabCompletionFlagAsserted() {
+		return c.root().installZshCompletion()
+	} else if c.handler == nil {
+		return c.renderHelp(os.Stdout)
+	}
+
 	return c.handler(c.onContext(ctx))
+}
+
+func (c *Command) helpFlagAsserted() bool {
+	helpFlag, found := c.findFlagUpToRoot(func(flag *Flag) bool { return flag.isHelp() })
+
+	return found && helpFlag.value != nil && helpFlag.value.(bool)
+}
+
+func (c *Command) tabCompletionFlagAsserted() bool {
+	tabCompletionFlag, found := c.findFlagUpToRoot(func(flag *Flag) bool { return flag.isTabCompletion() })
+
+	return found && tabCompletionFlag.value != nil && tabCompletionFlag.value.(bool)
 }
 
 func (c *Command) root() *Command {

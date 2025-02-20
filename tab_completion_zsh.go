@@ -99,10 +99,6 @@ func (c *Command) createAndWriteCompletion(completionPath string) (err error) {
 		return err
 	}
 
-	fmt.Println(buffer.String())
-	fmt.Println("-------------")
-	fmt.Println(string(fileContents))
-
 	if bytes.Equal(buffer.Bytes(), fileContents) {
 		return nil
 	}
@@ -136,12 +132,18 @@ func (c *Command) zshAutocompleteContext() map[string]any {
 				"description": command.description,
 			}
 		}),
+		"args": lo.Map(c.arguments, func(argument *Argument, _ int) map[string]any {
+			return map[string]any{
+				"name":        argument.name,
+				"description": argument.description,
+			}
+		}),
 		"flags": lo.Map(c.flags, func(flag *Flag, _ int) map[string]any {
 			return map[string]any{
 				"name":        flag.name,
 				"description": flag.description,
 				"aliases":     flag.aliases,
-				"shorts":      flag.shorts,
+				"shorts":      string(flag.shorts),
 			}
 		}),
 	}

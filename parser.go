@@ -92,10 +92,6 @@ func (p *parser) processLongFlag() error {
 	}
 
 	if flag.isBool() {
-		if flag.isHelp() {
-			p.command.handler = helpHandler
-		}
-
 		flag.value = !flag.defaultValue.(bool)
 		p.index += 1
 		return nil
@@ -123,10 +119,6 @@ func (p *parser) processLongFlagWithEqual() error {
 	flag, found := p.command.findLongFlag(strings.TrimPrefix(rawFlag, longFlagPrefix))
 	if !found {
 		return errors.Wrapf(InvalidFlagError, "no flag found for %q", rawFlag)
-	}
-
-	if flag.isHelp() {
-		p.command.handler = helpHandler
 	}
 
 	value, err := flag.parser.Parse(rawValue)
@@ -168,10 +160,6 @@ func (p *parser) processShortFlag(short rune) (bool, error) {
 	}
 
 	if flag.isBool() {
-		if flag.isHelp() {
-			p.command.handler = helpHandler
-		}
-
 		flag.value = !flag.defaultValue.(bool)
 		return false, nil
 	}
@@ -203,10 +191,6 @@ func (p *parser) processShortFlagWithEqual() error {
 	flag, found := p.command.findShortFlag(short)
 	if !found {
 		return errors.Wrapf(InvalidFlagError, "no short flag found for %q", dashifyShort(short))
-	}
-
-	if flag.isHelp() {
-		p.command.handler = helpHandler
 	}
 
 	value, err := flag.parser.Parse(rawValue)

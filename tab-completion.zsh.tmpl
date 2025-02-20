@@ -1,17 +1,19 @@
 #compdef {{.name}}
 
 _{{.name}}() {
-    local line state
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
 
     _arguments -C \
         "1: :->cmds" \
         "*::arg:->args"
 
-    case "$state" in
+    echo "$state"
+    case $state in
         cmds)
-            _values 'commands' \
+            _values "commands" \
                 {{- range .subCommands }}
-                '{{.name}}[{{.description}}]' \
+                "{{.name}}:{{.description}}" \
                 {{- end }}
             ;;
         args)
@@ -20,11 +22,14 @@ _{{.name}}() {
                 {{.name}})
                     _arguments \
                         {{- range $.flags}}
-                        {{if .shorts}}
-                        "(-{{index .shorts 0}} --{{.name}})"{-{{index .shorts 0}},--{{.name}}}"[{{.description}}]" \
-                        {{else}}
+                        {{- if .shorts}}
+                        "(-{{.shorts}} --{{.name}})"{-{{.shorts}},--{{.name}}}"[{{.description}}]" \
+                        {{- else}}
                         "--{{.name}}[{{.description}}]" \
-                        {{end}}
+                        {{- end}}
+                        {{- end}}
+                        {{- range $.args}}
+                        "*:{{.name}}:_files" \
                         {{- end}}
                     ;;
                 {{- end}}
@@ -32,5 +37,9 @@ _{{.name}}() {
             ;;
     esac
 }
+
+if [[ ! -o interactive ]]; then
+    return
+fi
 
 compdef _{{.name}} {{.name}}
