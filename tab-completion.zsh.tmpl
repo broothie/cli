@@ -1,45 +1,7 @@
 #compdef {{.name}}
 
-_{{.name}}() {
-    local curcontext="$curcontext" state line
-    typeset -A opt_args
-
-    _arguments -C \
-        "1: :->cmds" \
-        "*::arg:->args"
-
-    echo "$state"
-    case $state in
-        cmds)
-            _values "commands" \
-                {{- range .subCommands }}
-                "{{.name}}:{{.description}}" \
-                {{- end }}
-            ;;
-        args)
-            case $line[1] in
-                {{- range .subCommands}}
-                {{.name}})
-                    _arguments \
-                        {{- range $.flags}}
-                        {{- if .shorts}}
-                        "(-{{.shorts}} --{{.name}})"{-{{.shorts}},--{{.name}}}"[{{.description}}]" \
-                        {{- else}}
-                        "--{{.name}}[{{.description}}]" \
-                        {{- end}}
-                        {{- end}}
-                        {{- range $.args}}
-                        "*:{{.name}}:_files" \
-                        {{- end}}
-                    ;;
-                {{- end}}
-            esac
-            ;;
-    esac
-}
-
-if [[ ! -o interactive ]]; then
-    return
-fi
-
-compdef _{{.name}} {{.name}}
+_arguments \
+{{- $flagsLength := len .flags }}
+{{- range $index, $flag := .flags }}
+    '--{{$flag.name}}[{{$flag.description}}]'{{ if lt $index (minus $flagsLength 1) }} \{{ end }}
+{{- end }}

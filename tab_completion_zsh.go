@@ -20,7 +20,13 @@ var (
 	//go:embed tab-completion.zsh.tmpl
 	rawZshTabCompletionTemplate string
 
-	zshTabCompletionTemplate = template.Must(template.New("tab-completion.zsh").Parse(rawZshTabCompletionTemplate))
+	zshTabCompletionTemplate = template.Must(
+		template.New("tab-completion.zsh").
+			Funcs(template.FuncMap{
+				"minus": func(a, b int) int { return a - b },
+			}).
+			Parse(rawZshTabCompletionTemplate),
+	)
 )
 
 func (c *Command) installZshCompletion() error {
@@ -42,16 +48,19 @@ func (c *Command) installZshCompletion() error {
 		return errors.New("no completion paths found in $fpath")
 	}
 
+	var errs []error
 	for _, directory := range paths {
 		directory := strings.Trim(directory, "()")
 		completionPath := filepath.Join(directory, fmt.Sprintf("_%s", c.name))
 
-		if err := c.createAndWriteCompletion(completionPath); err == nil {
+		if err := c.createAndWriteCompletion(completionPath); err != nil {
+			errs = append(errs, err)
+		} else {
 			return nil
 		}
 	}
 
-	return errors.New("no writable paths found in $fpath")
+	return errors.Join(errs...)
 }
 
 func (c *Command) createAndWriteCompletion(completionPath string) (err error) {
