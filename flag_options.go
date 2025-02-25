@@ -59,3 +59,17 @@ func SetFlagDefaultAndParser[T any](defaultValue T, argParser ArgParser[T]) opti
 		return flag, nil
 	}
 }
+
+func setFlagIsHelp(isHelp bool) option.Func[*Flag] {
+	return func(flag *Flag) (*Flag, error) {
+		flag.isHelp = isHelp
+		return flag, nil
+	}
+}
+
+func setFlagIsVersion(isVersion bool) option.Func[*Flag] {
+	return func(flag *Flag) (*Flag, error) {
+		flag.isVersion = isVersion
+		return flag, nil
+	}
+}

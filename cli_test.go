@@ -4,14 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/broothie/test"
 	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func ensureCalled(t *testing.T) func() {
 	called := false
-	t.Cleanup(func() { assert.True(t, called) })
+	t.Cleanup(func() { test.True(t, called) })
 
 	return func() { called = true }
 }
@@ -43,8 +42,8 @@ func Test_git(t *testing.T) {
 					called()
 
 					gitDir, err := FlagValue[string](ctx, "git-dir")
-					assert.NoError(t, err)
-					assert.Equal(t, "/path/to/something", gitDir)
+					test.Nil(t, err)
+					test.Equal(t, "/path/to/something", gitDir)
 
 					return nil
 				}
@@ -58,8 +57,8 @@ func Test_git(t *testing.T) {
 					called()
 
 					gitDir, err := FlagValue[string](ctx, "git-dir")
-					assert.NoError(t, err)
-					assert.Equal(t, "/path/to/something", gitDir)
+					test.Nil(t, err)
+					test.Equal(t, "/path/to/something", gitDir)
 
 					return nil
 				}
@@ -83,8 +82,8 @@ func Test_git(t *testing.T) {
 					called()
 
 					message, err := FlagValue[string](ctx, "message")
-					assert.NoError(t, err)
-					assert.Equal(t, "a commit message", message)
+					test.Nil(t, err)
+					test.Equal(t, "a commit message", message)
 
 					return nil
 				}
@@ -98,12 +97,12 @@ func Test_git(t *testing.T) {
 					called()
 
 					isAll, err := FlagValue[bool](ctx, "all")
-					assert.NoError(t, err)
-					assert.False(t, isAll)
+					test.Nil(t, err)
+					test.False(t, isAll)
 
 					message, err := FlagValue[string](ctx, "message")
-					assert.NoError(t, err)
-					assert.Equal(t, "a commit message", message)
+					test.Nil(t, err)
+					test.Equal(t, "a commit message", message)
 
 					return nil
 				}
@@ -117,12 +116,12 @@ func Test_git(t *testing.T) {
 					called()
 
 					isAll, err := FlagValue[bool](ctx, "all")
-					assert.NoError(t, err)
-					assert.False(t, isAll)
+					test.Nil(t, err)
+					test.False(t, isAll)
 
 					message, err := FlagValue[string](ctx, "message")
-					assert.NoError(t, err)
-					assert.Equal(t, "a commit message", message)
+					test.Nil(t, err)
+					test.Equal(t, "a commit message", message)
 
 					return nil
 				}
@@ -136,12 +135,12 @@ func Test_git(t *testing.T) {
 					called()
 
 					isAll, err := FlagValue[bool](ctx, "all")
-					assert.NoError(t, err)
-					assert.True(t, isAll)
+					test.Nil(t, err)
+					test.True(t, isAll)
 
 					message, err := FlagValue[string](ctx, "message")
-					assert.NoError(t, err)
-					assert.Equal(t, "a commit message", message)
+					test.Nil(t, err)
+					test.Equal(t, "a commit message", message)
 
 					return nil
 				}
@@ -155,8 +154,8 @@ func Test_git(t *testing.T) {
 					called()
 
 					branch, err := ArgValue[string](ctx, "branch")
-					assert.NoError(t, err)
-					assert.Equal(t, "some-branch", branch)
+					test.Nil(t, err)
+					test.Equal(t, "some-branch", branch)
 
 					return nil
 				}
@@ -170,12 +169,12 @@ func Test_git(t *testing.T) {
 					called()
 
 					branch, err := ArgValue[string](ctx, "branch")
-					assert.NoError(t, err)
-					assert.Equal(t, "some-branch", branch)
+					test.Nil(t, err)
+					test.Equal(t, "some-branch", branch)
 
 					isNewBranch, err := FlagValue[bool](ctx, "new-branch")
-					assert.NoError(t, err)
-					assert.True(t, isNewBranch)
+					test.Nil(t, err)
+					test.True(t, isNewBranch)
 
 					return nil
 				}
@@ -197,7 +196,7 @@ func Test_git(t *testing.T) {
 						AddFlagShort('a'),
 						SetFlagDefault(false),
 					),
-					SetHandler(lo.If(testCase.commitHandler == nil, helpHandler).ElseF(func() func(ctx context.Context) error { return testCase.commitHandler(t) })),
+					SetHandler(lo.IfF(testCase.commitHandler != nil, func() Handler { return testCase.commitHandler(t) }).Else(nil)),
 				),
 				AddSubCmd("checkout", "Switch branches or restore working tree files",
 					AddArg("branch", "Branch to check out"),
@@ -205,13 +204,13 @@ func Test_git(t *testing.T) {
 						AddFlagShort('b'),
 						SetFlagDefault(false),
 					),
-					SetHandler(lo.If(testCase.checkoutHandler == nil, helpHandler).ElseF(func() func(ctx context.Context) error { return testCase.checkoutHandler(t) })),
+					SetHandler(lo.IfF(testCase.checkoutHandler != nil, func() Handler { return testCase.checkoutHandler(t) }).Else(nil)),
 				),
-				SetHandler(lo.If(testCase.gitHandler == nil, helpHandler).ElseF(func() func(ctx context.Context) error { return testCase.gitHandler(t) })),
+				SetHandler(lo.IfF(testCase.gitHandler != nil, func() Handler { return testCase.gitHandler(t) }).Else(nil)),
 			)
 
-			require.NoError(t, err)
-			assert.NoError(t, command.Run(context.TODO(), testCase.rawArgs))
+			test.MustNoError(t, err)
+			test.Nil(t, command.Run(context.TODO(), testCase.rawArgs))
 		})
 	}
 }

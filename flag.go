@@ -15,6 +15,8 @@ type Flag struct {
 	description  string
 	aliases      []string
 	shorts       []rune
+	isHelp       bool
+	isVersion    bool
 	isHidden     bool
 	isInherited  bool
 	parser       argParser
@@ -39,10 +41,6 @@ func newFlag(name, description string, options ...option.Option[*Flag]) (*Flag, 
 	return flag, nil
 }
 
-func (f *Flag) isHelp() bool {
-	return f.name == helpFlagName && f.isBool()
-}
-
 func (f *Flag) isBool() bool {
 	return isBoolParser(f.parser)
 }
@@ -53,10 +51,13 @@ func (c *Command) findFlag(name string) (*Flag, bool) {
 
 func (c *Command) findFlagUpToRoot(predicate func(*Flag) bool) (*Flag, bool) {
 	for current := c; current != nil; current = current.parent {
-		currentIsSelf := current == c
+		flags := current.flags
+		if currentIsSelf := current == c; !currentIsSelf {
+			flags = lo.Filter(flags, func(flag *Flag, _ int) bool { return flag.isInherited })
+		}
 
 		flag, found := lo.Find(c.flags, predicate)
-		if found && (flag.isInherited || currentIsSelf) {
+		if found {
 			return flag, true
 		}
 	}

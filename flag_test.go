@@ -3,8 +3,8 @@ package cli
 import (
 	"testing"
 
+	"github.com/broothie/test"
 	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCommand_flagsUpToRoot(t *testing.T) {
@@ -16,11 +16,11 @@ func TestCommand_flagsUpToRoot(t *testing.T) {
 		),
 	)
 
-	assert.NoError(t, err)
+	test.Nil(t, err)
 
 	flags := command.subCommands[0].flagsUpToRoot()
 	flagNames := lo.Map(flags, func(flag *Flag, _ int) string { return flag.name })
-	assert.Contains(t, flagNames, "top-inherited")
-	assert.Contains(t, flagNames, "flag")
-	assert.NotContains(t, flagNames, "top-uninherited")
+	test.Contains(t, flagNames, "top-inherited")
+	test.Contains(t, flagNames, "flag")
+	test.NotContains(t, flagNames, "top-uninherited")
 }

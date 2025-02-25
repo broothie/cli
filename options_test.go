@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/broothie/test"
 )
 
 func Test_options(t *testing.T) {
@@ -28,67 +28,65 @@ func Test_options(t *testing.T) {
 			SetHandler(func(context.Context) error { return nil }),
 		)
 
-		assert.NoError(t, err)
+		test.Nil(t, err)
 
 		// Command
-		assert.Equal(t, "http", httpCommand.name)
-		assert.Equal(t, "Run http server", httpCommand.description)
-		assert.Equal(t, "v0.1.0", httpCommand.version)
-		assert.NotEqual(t, reflect.ValueOf(helpHandler).Pointer(), reflect.ValueOf(httpCommand.handler).Pointer())
-		assert.Nil(t, httpCommand.parent)
-		assert.Equal(t, httpCommand, httpCommand.root())
-		assert.True(t, httpCommand.isRoot())
-		assert.False(t, httpCommand.hasParent())
-		assert.Equal(t, "http", httpCommand.qualifiedName())
-		assert.Equal(t, "v0.1.0", httpCommand.findVersion())
+		test.Equal(t, "http", httpCommand.name)
+		test.Equal(t, "Run http server", httpCommand.description)
+		test.Equal(t, "v0.1.0", httpCommand.version)
+		test.Nil(t, httpCommand.parent)
+		test.Equal(t, httpCommand, httpCommand.root())
+		test.True(t, httpCommand.isRoot())
+		test.False(t, httpCommand.hasParent())
+		test.Equal(t, "http", httpCommand.qualifiedName())
+		test.Equal(t, "v0.1.0", httpCommand.findVersion())
 
 		// Flags
-		assert.NotEmpty(t, httpCommand.flags)
+		test.NotSliceEmpty(t, httpCommand.flags)
 
 		helpFlag := httpCommand.flags[0]
-		assert.Equal(t, "help", helpFlag.name)
-		assert.Equal(t, "Print help.", helpFlag.description)
-		assert.Equal(t, false, helpFlag.defaultValue)
-		assert.Nil(t, helpFlag.value)
-		assert.Equal(t, reflect.ValueOf(BoolParser).Pointer(), reflect.ValueOf(helpFlag.parser).Pointer())
-		assert.True(t, helpFlag.isBool())
-		assert.True(t, helpFlag.isHelp())
+		test.Equal(t, "help", helpFlag.name)
+		test.Equal(t, "Print help.", helpFlag.description)
+		test.Equal(t, false, helpFlag.defaultValue)
+		test.Nil(t, helpFlag.value)
+		test.Equal(t, reflect.ValueOf(BoolParser).Pointer(), reflect.ValueOf(helpFlag.parser).Pointer())
+		test.True(t, helpFlag.isBool())
+		test.True(t, helpFlag.isHelp)
 
 		portFlag := httpCommand.flags[1]
-		assert.Equal(t, "port", portFlag.name)
-		assert.Equal(t, "Port to run server on", portFlag.description)
-		assert.Equal(t, []string{"addr"}, portFlag.aliases)
-		assert.Equal(t, []rune{'p'}, portFlag.shorts)
-		assert.Equal(t, 3000, portFlag.defaultValue)
-		assert.Nil(t, portFlag.value)
-		assert.Equal(t, reflect.ValueOf(IntParser).Pointer(), reflect.ValueOf(portFlag.parser).Pointer())
-		assert.False(t, portFlag.isBool())
-		assert.False(t, portFlag.isHelp())
+		test.Equal(t, "port", portFlag.name)
+		test.Equal(t, "Port to run server on", portFlag.description)
+		test.DeepEqual(t, []string{"addr"}, portFlag.aliases)
+		test.DeepEqual(t, []rune{'p'}, portFlag.shorts)
+		test.Equal(t, 3000, portFlag.defaultValue)
+		test.Nil(t, portFlag.value)
+		test.Equal(t, reflect.ValueOf(IntParser).Pointer(), reflect.ValueOf(portFlag.parser).Pointer())
+		test.False(t, portFlag.isBool())
+		test.False(t, portFlag.isHelp)
 
 		// Sub-command
-		assert.NotEmpty(t, httpCommand.subCommands)
+		test.NotSliceEmpty(t, httpCommand.subCommands)
 
 		proxySubCommand := httpCommand.subCommands[0]
-		assert.Equal(t, "proxy", proxySubCommand.name)
-		assert.Equal(t, "Proxy requests", proxySubCommand.description)
-		assert.Equal(t, "", proxySubCommand.version)
-		assert.Equal(t, []string{"p", "x"}, proxySubCommand.aliases)
-		assert.Equal(t, reflect.ValueOf(helpHandler).Pointer(), reflect.ValueOf(proxySubCommand.handler).Pointer())
-		assert.NotNil(t, proxySubCommand.parent)
-		assert.Equal(t, httpCommand, proxySubCommand.root())
-		assert.False(t, proxySubCommand.isRoot())
-		assert.True(t, proxySubCommand.hasParent())
-		assert.Equal(t, "http proxy", proxySubCommand.qualifiedName())
-		assert.Equal(t, "v0.1.0", proxySubCommand.findVersion())
+		test.Equal(t, "proxy", proxySubCommand.name)
+		test.Equal(t, "Proxy requests", proxySubCommand.description)
+		test.Equal(t, "", proxySubCommand.version)
+		test.DeepEqual(t, []string{"p", "x"}, proxySubCommand.aliases)
+		test.NotNil(t, proxySubCommand.parent)
+		test.Equal(t, httpCommand, proxySubCommand.root())
+		test.False(t, proxySubCommand.isRoot())
+		test.True(t, proxySubCommand.hasParent())
+		test.Equal(t, "http proxy", proxySubCommand.qualifiedName())
+		test.Equal(t, "v0.1.0", proxySubCommand.findVersion())
 
 		// Argument
-		assert.NotEmpty(t, proxySubCommand.arguments)
+		test.NotSliceEmpty(t, proxySubCommand.arguments)
 
 		targetArgument := proxySubCommand.arguments[0]
-		assert.Equal(t, "target", targetArgument.name)
-		assert.Equal(t, "Target to proxy requests to", targetArgument.description)
-		assert.Equal(t, reflect.ValueOf(URLParser).Pointer(), reflect.ValueOf(targetArgument.parser).Pointer())
-		assert.Nil(t, targetArgument.value)
+		test.Equal(t, "target", targetArgument.name)
+		test.Equal(t, "Target to proxy requests to", targetArgument.description)
+		test.Equal(t, reflect.ValueOf(URLParser).Pointer(), reflect.ValueOf(targetArgument.parser).Pointer())
+		test.Nil(t, targetArgument.value)
 	})
 }
 

@@ -2,7 +2,9 @@ package cli
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/bobg/errors"
@@ -28,7 +30,6 @@ func NewCommand(name, description string, options ...option.Option[*Command]) (*
 	baseCommand := &Command{
 		name:        name,
 		description: description,
-		handler:     helpHandler,
 	}
 
 	command, err := option.Apply(baseCommand, options...)
@@ -44,22 +45,56 @@ func NewCommand(name, description string, options ...option.Option[*Command]) (*
 }
 
 // Run creates and runs a command using os.Args as the arguments and context.Background as the context.
-func Run(name, description string, options ...option.Option[*Command]) error {
+func Run(name, description string, options ...option.Option[*Command]) {
 	command, err := NewCommand(name, description, options...)
 	if err != nil {
-		return err
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
-	return command.Run(context.Background(), os.Args[1:])
+	if err := command.Run(context.Background(), os.Args[1:]); err != nil {
+		fmt.Println(err)
+
+		if exitErr := new(exec.ExitError); errors.As(err, exitErr) {
+			os.Exit(exitErr.ExitCode())
+		} else {
+			os.Exit(1)
+		}
+	}
 }
 
 // Run runs the command.
 func (c *Command) Run(ctx context.Context, rawArgs []string) error {
-	return c.newParser(rawArgs).parse(ctx)
+	if err := c.newParser(rawArgs).parse(ctx); err != nil {
+		return err
+	}
+
+	return c.runHandler(ctx)
 }
 
 func (c *Command) runHandler(ctx context.Context) error {
+	if c.isHelpFlagAsserted() {
+		return c.renderHelp(os.Stdout)
+	} else if c.isVersionFlagAsserted() {
+		fmt.Println(c.findVersion())
+		return nil
+	} else if c.handler == nil {
+		return c.renderHelp(os.Stdout)
+	}
+
 	return c.handler(c.onContext(ctx))
+}
+
+func (c *Command) isHelpFlagAsserted() bool {
+	flag, found := c.findFlagUpToRoot(func(flag *Flag) bool { return flag.isHelp })
+
+	return found && flag.isBool() && flag.value != nil && flag.value.(bool)
+}
+
+func (c *Command) isVersionFlagAsserted() bool {
+	flag, found := c.findFlagUpToRoot(func(flag *Flag) bool { return flag.isVersion })
+
+	return found && flag.isBool() && flag.value != nil && flag.value.(bool)
 }
 
 func (c *Command) root() *Command {

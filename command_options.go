@@ -70,11 +70,11 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 
 // AddHelpFlag adds a help flag to the command.
 func AddHelpFlag(options ...option.Option[*Flag]) option.Func[*Command] {
-	defaultOptions := option.NewOptions(SetFlagDefault(false))
+	defaultOptions := option.NewOptions(setFlagIsHelp(true), SetFlagDefault(false))
 	return AddFlag(helpFlagName, "Print help.", append(defaultOptions, options...)...)
 }
 
 func AddVersionFlag(options ...option.Option[*Flag]) option.Func[*Command] {
-	defaultOptions := option.NewOptions(SetFlagDefault(false))
+	defaultOptions := option.NewOptions(setFlagIsVersion(true), SetFlagDefault(false))
 	return AddFlag(versionFlagName, "Print version.", append(defaultOptions, options...)...)
 }
