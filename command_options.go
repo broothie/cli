@@ -40,6 +40,13 @@ func AddSubCmd(name, description string, options ...option.Option[*Command]) opt
 			return nil, err
 		}
 
+		return MountSubCmd(subCommand).Apply(command)
+	}
+}
+
+// MountSubCmd mounds an existing *Command as a sub-command.
+func MountSubCmd(subCommand *Command) option.Func[*Command] {
+	return func(command *Command) (*Command, error) {
 		subCommand.parent = command
 		command.subCommands = append(command.subCommands, subCommand)
 		return command, nil
