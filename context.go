@@ -45,7 +45,11 @@ func ArgValue[T any](ctx context.Context, name string) (T, error) {
 		return zero, errors.Wrapf(ArgumentNotFoundError, "finding argument %q", name)
 	}
 
-	return arg.value.(T), nil
+	if arg.value != nil {
+		return arg.value.(T), nil
+	}
+
+	return arg.defaultValue.(T), nil
 }
 
 var commandContextKey struct{}

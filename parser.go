@@ -40,17 +40,15 @@ func (c *Command) newParser(tokens []string) *parser {
 	return newParser(c, tokens)
 }
 
-func (p *parser) parse(ctx context.Context) error {
+func (p *parser) parse(ctx context.Context) (bool, error) {
 	for p.index < len(p.tokens) {
 		commandProcessed, err := p.parseArg(ctx)
-		if err != nil {
-			return err
-		} else if commandProcessed {
-			return nil
+		if err != nil || commandProcessed {
+			return true, err
 		}
 	}
 
-	return p.command.validateInput()
+	return false, nil
 }
 
 func (p *parser) parseArg(ctx context.Context) (bool, error) {

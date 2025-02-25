@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"github.com/bobg/errors"
 	"github.com/broothie/option"
 )
 
@@ -42,7 +41,7 @@ func SetFlagDefault[T Parseable](defaultValue T) option.Func[*Flag] {
 	return func(flag *Flag) (*Flag, error) {
 		argParser, err := argParserFromParseable[T]()
 		if err != nil {
-			return nil, errors.Wrapf(err, "")
+			return nil, err
 		}
 
 		flag.parser = argParser

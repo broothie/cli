@@ -1,6 +1,10 @@
 package cli
 
-import "github.com/broothie/option"
+import (
+	"sort"
+
+	"github.com/broothie/option"
+)
 
 const versionFlagName = "version"
 
@@ -64,6 +68,8 @@ func AddArg(name, description string, options ...option.Option[*Argument]) optio
 		}
 
 		command.arguments = append(command.arguments, argument)
+		sort.SliceStable(command.arguments, func(i, j int) bool { return command.arguments[i].isRequired() && command.arguments[j].isOptional() })
+
 		return command, nil
 	}
 }

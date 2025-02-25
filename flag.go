@@ -51,12 +51,14 @@ func (c *Command) findFlag(name string) (*Flag, bool) {
 
 func (c *Command) findFlagUpToRoot(predicate func(*Flag) bool) (*Flag, bool) {
 	for current := c; current != nil; current = current.parent {
+		currentIsSelf := current == c
+
 		flags := current.flags
-		if currentIsSelf := current == c; !currentIsSelf {
+		if !currentIsSelf {
 			flags = lo.Filter(flags, func(flag *Flag, _ int) bool { return flag.isInherited })
 		}
 
-		flag, found := lo.Find(c.flags, predicate)
+		flag, found := lo.Find(flags, predicate)
 		if found {
 			return flag, true
 		}

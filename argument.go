@@ -9,9 +9,10 @@ import (
 )
 
 type Argument struct {
-	name        string
-	description string
-	parser      argParser
+	name         string
+	description  string
+	parser       argParser
+	defaultValue any
 
 	value any
 }
@@ -31,7 +32,19 @@ func newArgument(name, description string, options ...option.Option[*Argument]) 
 	return argument, nil
 }
 
+func (a *Argument) isRequired() bool {
+	return a.defaultValue == nil
+}
+
+func (a *Argument) isOptional() bool {
+	return !a.isRequired()
+}
+
 func (a *Argument) inBrackets() string {
+	if a.isOptional() {
+		return fmt.Sprintf("<%s?>", a.name)
+	}
+
 	return fmt.Sprintf("<%s>", a.name)
 }
 

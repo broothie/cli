@@ -55,7 +55,7 @@ func Run(name, description string, options ...option.Option[*Command]) {
 	if err := command.Run(context.Background(), os.Args[1:]); err != nil {
 		fmt.Println(err)
 
-		if exitErr := new(exec.ExitError); errors.As(err, exitErr) {
+		if exitErr := new(exec.ExitError); errors.As(err, &exitErr) {
 			os.Exit(exitErr.ExitCode())
 		} else {
 			os.Exit(1)
@@ -65,8 +65,10 @@ func Run(name, description string, options ...option.Option[*Command]) {
 
 // Run runs the command.
 func (c *Command) Run(ctx context.Context, rawArgs []string) error {
-	if err := c.newParser(rawArgs).parse(ctx); err != nil {
+	if commandProcessed, err := c.newParser(rawArgs).parse(ctx); err != nil {
 		return err
+	} else if commandProcessed {
+		return nil
 	}
 
 	return c.runHandler(ctx)
@@ -78,7 +80,13 @@ func (c *Command) runHandler(ctx context.Context) error {
 	} else if c.isVersionFlagAsserted() {
 		fmt.Println(c.findVersion())
 		return nil
-	} else if c.handler == nil {
+	}
+
+	if err := c.validateInput(); err != nil {
+		return err
+	}
+
+	if c.handler == nil {
 		return c.renderHelp(os.Stdout)
 	}
 
