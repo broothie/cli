@@ -8,6 +8,7 @@ require (
 	github.com/broothie/option v0.1.0
 	github.com/samber/lo v1.49.1
 	github.com/stretchr/testify v1.10.0
+	golang.org/x/sync v0.10.0
 )
 
 require (

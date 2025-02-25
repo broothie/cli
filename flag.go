@@ -40,11 +40,15 @@ func newFlag(name, description string, options ...option.Option[*Flag]) (*Flag, 
 }
 
 func (f *Flag) isHelp() bool {
-	return f.name == helpFlagName && f.isBool()
+	return f.isBool() && f.name == helpFlagName
 }
 
 func (f *Flag) isBool() bool {
 	return isBoolParser(f.parser)
+}
+
+func (f *Flag) isTabCompletion() bool {
+	return f.isBool() && f.name == tabCompletionFlagName
 }
 
 func (c *Command) findFlag(name string) (*Flag, bool) {
@@ -53,10 +57,13 @@ func (c *Command) findFlag(name string) (*Flag, bool) {
 
 func (c *Command) findFlagUpToRoot(predicate func(*Flag) bool) (*Flag, bool) {
 	for current := c; current != nil; current = current.parent {
-		currentIsSelf := current == c
+		flags := current.flags
+		if currentIsSelf := current == c; !currentIsSelf {
+			flags = lo.Filter(flags, func(flag *Flag, _ int) bool { return flag.isInherited })
+		}
 
-		flag, found := lo.Find(c.flags, predicate)
-		if found && (flag.isInherited || currentIsSelf) {
+		flag, found := lo.Find(flags, predicate)
+		if found {
 			return flag, true
 		}
 	}

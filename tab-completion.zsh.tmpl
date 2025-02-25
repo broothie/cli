@@ -1,0 +1,7 @@
+#compdef {{.name}}
+
+_arguments \
+{{- $flagsLength := len .flags }}
+{{- range $index, $flag := .flags }}
+    '--{{$flag.name}}[{{$flag.description}}]'{{ if lt $index (minus $flagsLength 1) }} \{{ end }}
+{{- end }}

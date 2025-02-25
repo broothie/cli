@@ -2,11 +2,9 @@ package cli
 
 import (
 	"bytes"
-	"context"
 	_ "embed"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 	"text/tabwriter"
 	"text/template"
@@ -15,23 +13,12 @@ import (
 	"github.com/samber/lo"
 )
 
-//go:embed help.tmpl
-var rawHelpTemplate string
+var (
+	//go:embed help.tmpl
+	rawHelpTemplate string
 
-var helpTemplate = template.Must(template.New("help").Parse(rawHelpTemplate))
-
-func helpHandler(ctx context.Context) error {
-	command, err := commandFromContext(ctx)
-	if err != nil {
-		return errors.Wrap(err, "getting command for help")
-	}
-
-	if err := command.renderHelp(os.Stdout); err != nil {
-		return errors.Wrap(err, "rendering help")
-	}
-
-	return nil
-}
+	helpTemplate = template.Must(template.New("help").Parse(rawHelpTemplate))
+)
 
 func (c *Command) helpContext() helpContext {
 	return helpContext{command: c}

@@ -2,7 +2,10 @@ package cli
 
 import "github.com/broothie/option"
 
-const versionFlagName = "version"
+const (
+	versionFlagName       = "version"
+	tabCompletionFlagName = "set-up-tab-completion"
+)
 
 // SetVersion sets the version of the command.
 func SetVersion(version string) option.Func[*Command] {
@@ -77,4 +80,9 @@ func AddHelpFlag(options ...option.Option[*Flag]) option.Func[*Command] {
 func AddVersionFlag(options ...option.Option[*Flag]) option.Func[*Command] {
 	defaultOptions := option.NewOptions(SetFlagDefault(false))
 	return AddFlag(versionFlagName, "Print version.", append(defaultOptions, options...)...)
+}
+
+func AddTabCompletionFlag(options ...option.Option[*Flag]) option.Func[*Command] {
+	defaultOptions := option.NewOptions(SetFlagDefault(false))
+	return AddFlag(tabCompletionFlagName, "Set up tab completion.", append(defaultOptions, options...)...)
 }

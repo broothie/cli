@@ -197,7 +197,7 @@ func Test_git(t *testing.T) {
 						AddFlagShort('a'),
 						SetFlagDefault(false),
 					),
-					SetHandler(lo.If(testCase.commitHandler == nil, helpHandler).ElseF(func() func(ctx context.Context) error { return testCase.commitHandler(t) })),
+					SetHandler(lo.IfF(testCase.commitHandler != nil, func() Handler { return testCase.commitHandler(t) }).Else(nil)),
 				),
 				AddSubCmd("checkout", "Switch branches or restore working tree files",
 					AddArg("branch", "Branch to check out"),
@@ -205,9 +205,9 @@ func Test_git(t *testing.T) {
 						AddFlagShort('b'),
 						SetFlagDefault(false),
 					),
-					SetHandler(lo.If(testCase.checkoutHandler == nil, helpHandler).ElseF(func() func(ctx context.Context) error { return testCase.checkoutHandler(t) })),
+					SetHandler(lo.IfF(testCase.checkoutHandler != nil, func() Handler { return testCase.checkoutHandler(t) }).Else(nil)),
 				),
-				SetHandler(lo.If(testCase.gitHandler == nil, helpHandler).ElseF(func() func(ctx context.Context) error { return testCase.gitHandler(t) })),
+				SetHandler(lo.IfF(testCase.gitHandler != nil, func() Handler { return testCase.gitHandler(t) }).Else(nil)),
 			)
 
 			require.NoError(t, err)
