@@ -1,6 +1,9 @@
 package cli
 
 import (
+	"os"
+
+	"github.com/bobg/errors"
 	"github.com/broothie/option"
 )
 
@@ -46,6 +49,7 @@ func SetFlagDefault[T Parseable](defaultValue T) option.Func[*Flag] {
 
 		flag.parser = argParser
 		flag.defaultValue = defaultValue
+		flag.defaultEnvName = ""
 		return flag, nil
 	}
 }
@@ -55,6 +59,22 @@ func SetFlagDefaultAndParser[T any](defaultValue T, argParser ArgParser[T]) opti
 	return func(flag *Flag) (*Flag, error) {
 		flag.parser = argParser
 		flag.defaultValue = defaultValue
+		flag.defaultEnvName = ""
+		return flag, nil
+	}
+}
+
+// SetFlagDefaultEnvAndParser sets the default value to that of the corresponding environment variable, and parser of the flag.
+func SetFlagDefaultEnvAndParser[T any](name string, argParser ArgParser[T]) option.Func[*Flag] {
+	return func(flag *Flag) (*Flag, error) {
+		defaultValue, err := argParser(os.Getenv(name))
+		if err != nil {
+			return nil, errors.Wrapf(err, "parsing value of $%s", name)
+		}
+
+		flag.parser = argParser
+		flag.defaultValue = defaultValue
+		flag.defaultEnvName = name
 		return flag, nil
 	}
 }

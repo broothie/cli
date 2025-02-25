@@ -126,9 +126,9 @@ func ExampleAddSubCmd() {
 	// server: An http server.
 	//
 	// Usage:
-	//   server [sub-commands]
+	//   server [sub-command]
 	//
-	// Sub-commands:
+	// Sub-command:
 	//   start: Start the server
 }
 

@@ -26,9 +26,9 @@ func ExampleNewCommand() {
 	// server v0.1.0: An http server.
 	//
 	// Usage:
-	//   server [flags] [sub-commands]
+	//   server [flags] [sub-command]
 	//
-	// Sub-commands:
+	// Sub-command:
 	//   proxy: Proxy requests to another server.
 	//
 	// Flags:

@@ -104,12 +104,17 @@ func (h helpContext) FlagTable() (string, error) {
 			shorts = fmt.Sprintf("-%s", string(flag.shorts))
 		}
 
+		defaultValueHelp := fmt.Sprintf("%q", fmt.Sprint(flag.defaultValue))
+		if flag.defaultEnvName != "" {
+			defaultValueHelp = fmt.Sprintf("$%s", flag.defaultEnvName)
+		}
+
 		return []string{
 			"",
 			strings.Join(longs, " "),
 			shorts,
 			flag.description,
-			fmt.Sprintf("(type: %T, default: %q)", flag.parser.Type(), fmt.Sprint(flag.defaultValue)),
+			fmt.Sprintf("(type: %T, default: %s)", flag.parser.Type(), defaultValueHelp),
 		}, true
 	}))
 }
