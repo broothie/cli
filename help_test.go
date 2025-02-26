@@ -47,11 +47,11 @@ func TestCommand_renderHelp(t *testing.T) {
 				test v1.2.3-rc10: test command
 				
 				Usage:
-				  test [flags] <some-arg> <another-arg?>
+				  test [flags] <some-arg> [<another-arg>]
 				
 				Arguments:
-				  <some-arg>      some arg     (type: time.Time)
-				  <another-arg?>  another arg  (type: int, default: "123")
+				  <some-arg>       some arg     (type: time.Time)
+				  [<another-arg>]  another arg  (type: int, default: "123")
 				
 				Flags:
 				  --help                    Print help.  (type: bool, default: "false")
