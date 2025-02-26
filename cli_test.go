@@ -180,13 +180,32 @@ func Test_git(t *testing.T) {
 				}
 			},
 		},
+		"env var based flag is evaluated": {
+			gitHandler: func(t *testing.T) Handler {
+				called := ensureCalled(t)
+
+				return func(ctx context.Context) error {
+					called()
+
+					globalGitignore, err := FlagValue[string](ctx, "global-gitignore")
+					test.Nil(t, err)
+					test.Equal(t, globalGitignore, "path/to/some/.gitignore")
+					return nil
+				}
+			},
+		},
 	}
 
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
+			t.Setenv("GLOBAL_GITIGNORE", "path/to/some/.gitignore")
+
 			command, err := NewCommand("git", "the stupid content tracker",
 				SetVersion("v0.1.0"),
 				AddFlag("git-dir", "Git directory to use"),
+				AddFlag("global-gitignore", "Global .gitignore file to use.",
+					SetFlagDefaultEnv("GLOBAL_GITIGNORE"),
+				),
 				AddSubCmd("commit", "Record changes to the repository",
 					AddFlag("message", "commit message",
 						AddFlagAlias("msg"),

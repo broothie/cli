@@ -19,6 +19,7 @@ func Test_options(t *testing.T) {
 				AddFlagAlias("addr"),
 				AddFlagShort('p'),
 				SetFlagDefault(3000),
+				SetFlagDefaultEnv("PORT"),
 			),
 			AddSubCmd("proxy", "Proxy requests",
 				AddAlias("p"),
@@ -59,6 +60,7 @@ func Test_options(t *testing.T) {
 		test.DeepEqual(t, []string{"addr"}, portFlag.aliases)
 		test.DeepEqual(t, []rune{'p'}, portFlag.shorts)
 		test.Equal(t, 3000, portFlag.defaultValue)
+		test.Equal(t, "PORT", portFlag.defaultEnvName)
 		test.Nil(t, portFlag.value)
 		test.Equal(t, reflect.ValueOf(IntParser).Pointer(), reflect.ValueOf(portFlag.parser).Pointer())
 		test.False(t, portFlag.isBool())
@@ -149,6 +151,29 @@ func ExampleAddFlag() {
 	//
 	// Flags:
 	//   --port  -p  Port to run server on  (type: int, default: "3000")
+}
+
+func ExampleAddFlag_with_env() {
+	os.Setenv("PORT", "8080")
+	defer os.Unsetenv("PORT")
+
+	command, _ := NewCommand("server", "An http server.",
+		AddFlag("port", "Port to run server on",
+			AddFlagShort('p'),
+			SetFlagDefault(3000),
+			SetFlagDefaultEnv("PORT"),
+		),
+	)
+
+	command.renderHelp(os.Stdout)
+	// Output:
+	// server: An http server.
+	//
+	// Usage:
+	//   server [flags]
+	//
+	// Flags:
+	//   --port  -p  Port to run server on  (type: int, default: $PORT, "3000")
 }
 
 func ExampleAddArg() {
