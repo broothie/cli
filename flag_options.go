@@ -59,6 +59,14 @@ func SetFlagDefaultAndParser[T any](defaultValue T, argParser ArgParser[T]) opti
 	}
 }
 
+// SetFlagDefaultEnv sets the default value to that of the corresponding environment variable, and parser of the flag.
+func SetFlagDefaultEnv(name string) option.Func[*Flag] {
+	return func(flag *Flag) (*Flag, error) {
+		flag.defaultEnvName = name
+		return flag, nil
+	}
+}
+
 func setFlagIsHelp(isHelp bool) option.Func[*Flag] {
 	return func(flag *Flag) (*Flag, error) {
 		flag.isHelp = isHelp

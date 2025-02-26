@@ -11,16 +11,17 @@ import (
 const helpFlagName = "help"
 
 type Flag struct {
-	name         string
-	description  string
-	aliases      []string
-	shorts       []rune
-	isHelp       bool
-	isVersion    bool
-	isHidden     bool
-	isInherited  bool
-	parser       argParser
-	defaultValue any
+	name           string
+	description    string
+	aliases        []string
+	shorts         []rune
+	isHelp         bool
+	isVersion      bool
+	isHidden       bool
+	isInherited    bool
+	parser         argParser
+	defaultEnvName string
+	defaultValue   any
 
 	value any
 }

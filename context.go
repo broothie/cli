@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"os"
 
 	"github.com/bobg/errors"
 )
@@ -27,6 +28,15 @@ func FlagValue[T any](ctx context.Context, name string) (T, error) {
 
 	if flag.value != nil {
 		return flag.value.(T), nil
+	}
+
+	if flag.defaultEnvName != "" {
+		value, err := flag.parser.Parse(os.Getenv(flag.defaultEnvName))
+		if err != nil {
+			return zero, err
+		}
+
+		return value.(T), nil
 	}
 
 	return flag.defaultValue.(T), nil

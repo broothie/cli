@@ -84,9 +84,9 @@ func TestCommand_renderHelp(t *testing.T) {
 				test v1.2.3-rc10: test command
 				
 				Usage:
-				  test [flags] [sub-commands]
+				  test [flags] [sub-command]
 				
-				Sub-commands:
+				Sub-command:
 				  some-command: some command
 				
 				Flags:

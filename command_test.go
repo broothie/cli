@@ -8,8 +8,9 @@ func ExampleNewCommand() {
 		AddVersionFlag(AddFlagShort('V')),
 		AddHelpFlag(AddFlagShort('h')),
 		AddFlag("port", "Port to run server on.",
-			SetFlagDefault(3000),
 			AddFlagShort('p'),
+			SetFlagDefault(3000),
+			SetFlagDefaultEnv("PORT"),
 		),
 		AddFlag("auth-required", "Whether to require authentication.",
 			SetFlagDefault(true),
@@ -26,14 +27,14 @@ func ExampleNewCommand() {
 	// server v0.1.0: An http server.
 	//
 	// Usage:
-	//   server [flags] [sub-commands]
+	//   server [flags] [sub-command]
 	//
-	// Sub-commands:
+	// Sub-command:
 	//   proxy: Proxy requests to another server.
 	//
 	// Flags:
 	//   --version        -V  Print version.                      (type: bool, default: "false")
 	//   --help           -h  Print help.                         (type: bool, default: "false")
-	//   --port           -p  Port to run server on.              (type: int, default: "3000")
+	//   --port           -p  Port to run server on.              (type: int, default: $PORT, "3000")
 	//   --auth-required      Whether to require authentication.  (type: bool, default: "true")
 }
