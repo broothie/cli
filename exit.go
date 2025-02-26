@@ -19,8 +19,8 @@ func (e ExitError) Error() string {
 }
 
 // ExitCode returns an ExitError with the given code.
-func ExitCode(code int) ExitError {
-	return ExitError{Code: code}
+func ExitCode(code int) *ExitError {
+	return &ExitError{Code: code}
 }
 
 // ExitWithError exits the program with an error.
