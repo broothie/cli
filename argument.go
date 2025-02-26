@@ -42,7 +42,7 @@ func (a *Argument) isOptional() bool {
 
 func (a *Argument) inBrackets() string {
 	if a.isOptional() {
-		return fmt.Sprintf("<%s?>", a.name)
+		return fmt.Sprintf("[<%s>]", a.name)
 	}
 
 	return fmt.Sprintf("<%s>", a.name)
