@@ -39,6 +39,10 @@ func newFlag(name, description string, options ...option.Option[*Flag]) (*Flag, 
 		return nil, errors.Wrapf(err, "building flag %q", name)
 	}
 
+	if err := flag.validateConfig(); err != nil {
+		return nil, errors.Wrapf(err, "invalid flag %q", name)
+	}
+
 	return flag, nil
 }
 

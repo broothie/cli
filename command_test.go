@@ -1,6 +1,10 @@
 package cli
 
-import "os"
+import (
+	"context"
+	"fmt"
+	"os"
+)
 
 func ExampleNewCommand() {
 	command, _ := NewCommand("server", "An http server.",
@@ -37,4 +41,23 @@ func ExampleNewCommand() {
 	//   --help           -h  Print help.                         (type: bool, default: "false")
 	//   --port           -p  Port to run server on.              (type: int, default: $PORT, "3000")
 	//   --auth-required      Whether to require authentication.  (type: bool, default: "true")
+}
+
+func ExampleRun() {
+	oldArgs := os.Args
+	os.Args = []string{"echo", "hello"}
+	defer func() { os.Args = oldArgs }()
+
+	Run("echo", "Echo the arguments.",
+		AddArg("arg", "The argument to echo."),
+		SetHandler(func(ctx context.Context) error {
+			arg, _ := ArgValue[string](ctx, "arg")
+
+			fmt.Println(arg)
+			return nil
+		}),
+	)
+
+	// Output:
+	// hello
 }

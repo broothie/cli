@@ -29,6 +29,10 @@ func newArgument(name, description string, options ...option.Option[*Argument]) 
 		return nil, errors.Wrapf(err, "building argument %q", name)
 	}
 
+	if err := argument.validateConfig(); err != nil {
+		return nil, errors.Wrapf(err, "invalid argument %q", name)
+	}
+
 	return argument, nil
 }
 

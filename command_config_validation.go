@@ -1,8 +1,6 @@
 package cli
 
-import (
-	"github.com/bobg/errors"
-)
+import "github.com/bobg/errors"
 
 func (c *Command) validateConfig() error {
 	validations := []func() error{

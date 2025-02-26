@@ -37,26 +37,26 @@ func TestCommand_renderHelp(t *testing.T) {
 			),
 		)
 
-		test.Nil(t, err)
+		test.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		test.Nil(t, command.renderHelp(buffer))
+		test.NoError(t, command.renderHelp(buffer))
 
 		test.Equal(t,
 			heredoc.Doc(`
 				test v1.2.3-rc10: test command
-				
+
 				Usage:
 				  test [flags] <some-arg> [<another-arg>]
-				
+
 				Arguments:
 				  <some-arg>       some arg     (type: time.Time)
 				  [<another-arg>]  another arg  (type: int, default: "123")
-				
+
 				Flags:
 				  --help                    Print help.  (type: bool, default: "false")
 				  --some-flag --a-flag  -s  some flag    (type: cli.CustomType, default: "field=\"field default\"")
-				
+
 			`),
 			buffer.String(),
 		)
@@ -74,25 +74,25 @@ func TestCommand_renderHelp(t *testing.T) {
 			AddSubCmd("some-command", "some command"),
 		)
 
-		test.Nil(t, err)
+		test.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		test.Nil(t, command.renderHelp(buffer))
+		test.NoError(t, command.renderHelp(buffer))
 
 		test.Equal(t,
 			heredoc.Doc(`
 				test v1.2.3-rc10: test command
-				
+
 				Usage:
 				  test [flags] [sub-command]
-				
+
 				Sub-command:
 				  some-command: some command
-				
+
 				Flags:
 				  --help                    Print help.  (type: bool, default: "false")
 				  --some-flag --a-flag  -s  some flag    (type: cli.CustomType, default: "field=\"field default\"")
-				
+
 			`),
 			buffer.String(),
 		)
@@ -109,25 +109,25 @@ func TestCommand_renderHelp(t *testing.T) {
 			),
 		)
 
-		test.Nil(t, err)
+		test.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		test.Nil(t, command.subCommands[0].renderHelp(buffer))
+		test.NoError(t, command.subCommands[0].renderHelp(buffer))
 
 		test.Equal(t,
 			heredoc.Doc(`
 				test v1.2.3-rc10: test command
-				
+
 				Usage:
 				  test some-command [flags] <some-arg>
-				
+
 				Arguments:
 				  <some-arg>  some arg  (type: string)
-				
+
 				Flags:
 				  --some-flag    some flag  (type: string, default: "")
 				  --inherited    inherited  (type: string, default: "")
-				
+
 			`),
 			buffer.String(),
 		)

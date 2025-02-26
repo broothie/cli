@@ -62,7 +62,9 @@ func ArgValue[T any](ctx context.Context, name string) (T, error) {
 	return arg.defaultValue.(T), nil
 }
 
-var commandContextKey struct{}
+type commandContextKeyType struct{}
+
+var commandContextKey = commandContextKeyType{}
 
 func (c *Command) onContext(parent context.Context) context.Context {
 	return context.WithValue(parent, commandContextKey, c)

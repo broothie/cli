@@ -16,7 +16,7 @@ func TestCommand_flagsUpToRoot(t *testing.T) {
 		),
 	)
 
-	test.Nil(t, err)
+	test.NoError(t, err)
 
 	flags := command.subCommands[0].flagsUpToRoot()
 	flagNames := lo.Map(flags, func(flag *Flag, _ int) string { return flag.name })

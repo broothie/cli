@@ -1,8 +1,6 @@
 package cli
 
-import (
-	"github.com/broothie/option"
-)
+import "github.com/broothie/option"
 
 // AddFlagAlias adds an alias to the flag.
 func AddFlagAlias(alias string) option.Func[*Flag] {
