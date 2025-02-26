@@ -8,18 +8,22 @@ import (
 	"github.com/bobg/errors"
 )
 
+// ExitError is an error that causes the program to exit with a given status code.
 type ExitError struct {
 	Code int
 }
 
+// Error implements the error interface.
 func (e ExitError) Error() string {
 	return fmt.Sprintf("exit status %d", e.Code)
 }
 
+// ExitCode returns an ExitError with the given code.
 func ExitCode(code int) ExitError {
 	return ExitError{Code: code}
 }
 
+// ExitWithError exits the program with an error.
 func ExitWithError(err error) {
 	fmt.Println(err)
 
