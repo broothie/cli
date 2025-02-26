@@ -8,7 +8,7 @@ import (
 
 func TestArgument_validateInput(t *testing.T) {
 	arg, err := newArgument("test-arg", "Test arg.")
-	test.NoError(t, err)
+	test.MustNoError(t, err)
 
 	test.ErrorMessageIs(t, arg.validateInput(), `argument "test-arg": argument missing value`)
 

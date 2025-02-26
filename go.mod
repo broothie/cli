@@ -6,7 +6,7 @@ require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/bobg/errors v1.1.0
 	github.com/broothie/option v0.1.0
-	github.com/broothie/test v0.1.8
+	github.com/broothie/test v0.1.9
 	github.com/samber/lo v1.49.1
 )
 
