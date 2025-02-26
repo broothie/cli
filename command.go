@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/bobg/errors"
@@ -53,13 +52,7 @@ func Run(name, description string, options ...option.Option[*Command]) {
 	}
 
 	if err := command.Run(context.Background(), os.Args[1:]); err != nil {
-		fmt.Println(err)
-
-		if exitErr := new(exec.ExitError); errors.As(err, &exitErr) {
-			os.Exit(exitErr.ExitCode())
-		} else {
-			os.Exit(1)
-		}
+		ExitWithError(err)
 	}
 }
 

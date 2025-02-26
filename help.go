@@ -77,11 +77,16 @@ func (h helpContext) ArgumentList() string {
 
 func (h helpContext) ArgumentTable() (string, error) {
 	return tableToString(lo.Map(h.Arguments(), func(argument *Argument, _ int) []string {
+		valueInfo := fmt.Sprintf("(type: %T)", argument.parser.Type())
+		if argument.isOptional() {
+			valueInfo = fmt.Sprintf("(type: %T, default: %q)", argument.parser.Type(), fmt.Sprint(argument.defaultValue))
+		}
+
 		return []string{
 			"",
 			argument.inBrackets(),
 			argument.description,
-			fmt.Sprintf("(type: %T)", argument.parser.Type()),
+			valueInfo,
 		}
 	}))
 }

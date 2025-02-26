@@ -29,6 +29,9 @@ func TestCommand_renderHelp(t *testing.T) {
 				SetFlagDefaultAndParser(CustomType{Field: "field default"}, func(s string) (CustomType, error) { return CustomType{Field: s}, nil }),
 			),
 			AddFlag("hidden-flag", "some hidden flag", SetFlagIsHidden(true)),
+			AddArg("another-arg", "another arg",
+				SetArgDefault(123),
+			),
 			AddArg("some-arg", "some arg",
 				SetArgParser(TimeLayoutParser(time.RubyDate)),
 			),
@@ -44,10 +47,11 @@ func TestCommand_renderHelp(t *testing.T) {
 				test v1.2.3-rc10: test command
 				
 				Usage:
-				  test [flags] <some-arg>
+				  test [flags] <some-arg> <another-arg?>
 				
 				Arguments:
-				  <some-arg>  some arg  (type: time.Time)
+				  <some-arg>      some arg     (type: time.Time)
+				  <another-arg?>  another arg  (type: int, default: "123")
 				
 				Flags:
 				  --help                    Print help.  (type: bool, default: "false")
