@@ -26,7 +26,6 @@ type parser struct {
 
 	index         int
 	argumentIndex int
-	errors        []error
 }
 
 func newParser(command *Command, tokens []string) *parser {
