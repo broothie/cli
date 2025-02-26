@@ -44,8 +44,12 @@ func ExampleNewCommand() {
 }
 
 func ExampleRun() {
+	oldArgs := os.Args
+	os.Args = []string{"echo", "hello"}
+	defer func() { os.Args = oldArgs }()
+
 	Run("echo", "Echo the arguments.",
-		AddArg("arg", "The argument to echo.", SetArgDefault("hello")),
+		AddArg("arg", "The argument to echo."),
 		SetHandler(func(ctx context.Context) error {
 			arg, _ := ArgValue[string](ctx, "arg")
 
