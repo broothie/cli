@@ -55,7 +55,9 @@ func Run(name, description string, options ...option.Option[*Command]) {
 	if err := command.Run(context.Background(), os.Args[1:]); err != nil {
 		fmt.Println(err)
 
-		if exitErr := new(exec.ExitError); errors.As(err, &exitErr) {
+		if exitErr := new(ExitError); errors.As(err, &exitErr) {
+			os.Exit(exitErr.Code)
+		} else if exitErr := new(exec.ExitError); errors.As(err, &exitErr) {
 			os.Exit(exitErr.ExitCode())
 		} else {
 			os.Exit(1)
