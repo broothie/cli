@@ -29,7 +29,7 @@ func Test_options(t *testing.T) {
 			SetHandler(func(context.Context) error { return nil }),
 		)
 
-		test.Nil(t, err)
+		test.NoError(t, err)
 
 		// Command
 		test.Equal(t, "http", httpCommand.name)
