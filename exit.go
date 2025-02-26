@@ -31,7 +31,7 @@ func ExitWithError(err error) {
 		os.Exit(exitErr.Code)
 	} else if exitErr := new(exec.ExitError); errors.As(err, &exitErr) {
 		os.Exit(exitErr.ExitCode())
-	} else {
+	} else if err != nil {
 		os.Exit(1)
 	}
 }
