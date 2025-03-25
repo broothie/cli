@@ -21,6 +21,13 @@ func TestCommand_config_validations(t *testing.T) {
 			),
 			expectedError: `invalid command "test": duplicate flag "some-flag"`,
 		},
+		"validateNoDuplicateShortFlags": {
+			commandOptions: option.NewOptions(
+				AddFlag("some-flag", "some flag", AddFlagShort('s')),
+				AddFlag("some-other-flag", "some other flag", AddFlagShort('s')),
+			),
+			expectedError: `invalid command "test": duplicate short flag 's'`,
+		},
 		"validateNoDuplicateArguments": {
 			commandOptions: option.NewOptions(
 				AddArg("some-arg", "some arg"),
