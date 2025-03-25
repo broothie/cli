@@ -5,6 +5,7 @@ import "github.com/bobg/errors"
 func (c *Command) validateConfig() error {
 	validations := []func() error{
 		c.validateNoDuplicateFlags,
+		c.validateNoDuplicateShortFlags,
 		c.validateNoDuplicateArguments,
 		c.validateNoDuplicateSubCommands,
 		c.validateEitherCommandsOrArguments,
@@ -29,6 +30,23 @@ func (c *Command) validateNoDuplicateFlags() error {
 			}
 
 			flags[name] = true
+		}
+	}
+
+	return errors.Join(errs...)
+}
+
+func (c *Command) validateNoDuplicateShortFlags() error {
+	flags := make(map[rune]bool)
+
+	var errs []error
+	for _, flag := range c.flags {
+		for _, short := range flag.shorts {
+			if flags[short] {
+				errs = append(errs, errors.Errorf("duplicate short flag %q", short))
+			}
+
+			flags[short] = true
 		}
 	}
 
