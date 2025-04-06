@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	restToken      = "--"
 	flagPrefix     = "-"
 	longFlagPrefix = "--"
 )
@@ -41,9 +42,10 @@ func (c *Command) newParser(tokens []string) *parser {
 
 func (p *parser) parse(ctx context.Context) (bool, error) {
 	for p.index < len(p.tokens) {
-		commandProcessed, err := p.parseArg(ctx)
-		if err != nil || commandProcessed {
+		if commandProcessed, err := p.parseArg(ctx); err != nil {
 			return true, err
+		} else if commandProcessed {
+			return true, nil
 		}
 	}
 
@@ -53,13 +55,21 @@ func (p *parser) parse(ctx context.Context) (bool, error) {
 func (p *parser) parseArg(ctx context.Context) (bool, error) {
 	current, _ := p.current()
 
-	if strings.HasPrefix(current, flagPrefix) {
+	if current == restToken {
+		p.processRest()
+		return false, nil
+	} else if strings.HasPrefix(current, flagPrefix) {
 		return false, p.processFlag()
 	} else if command, found := lo.Find(p.command.subCommands, func(subCommand *Command) bool { return subCommand.name == current }); found {
 		return true, p.processCommand(ctx, command)
 	}
 
 	return false, p.processArg()
+}
+
+func (p *parser) processRest() {
+	p.command.rest = p.unprocessed()
+	p.index = len(p.tokens)
 }
 
 func (p *parser) processFlag() error {

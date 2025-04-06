@@ -7,23 +7,19 @@ import (
 	"github.com/bobg/errors"
 )
 
-var (
-	NotACommandContextError = errors.New("not a command context")
-	FlagNotFoundError       = errors.New("flag not found")
-	ArgumentNotFoundError   = errors.New("argument not found")
-)
+var HandleExecutionError = errors.New("executing handler")
 
 func FlagValue[T any](ctx context.Context, name string) (T, error) {
 	var zero T
 
 	command, err := commandFromContext(ctx)
 	if err != nil {
-		return zero, errors.Wrapf(err, "finding flag %q", name)
+		return zero, err
 	}
 
 	flag, found := command.findFlag(name)
 	if !found {
-		return zero, errors.Wrapf(FlagNotFoundError, "finding flag %q", name)
+		return zero, errors.Wrapf(HandleExecutionError, "finding flag %q", name)
 	}
 
 	if flag.value != nil {
@@ -33,7 +29,7 @@ func FlagValue[T any](ctx context.Context, name string) (T, error) {
 	if flag.defaultEnvName != "" {
 		value, err := flag.parser.Parse(os.Getenv(flag.defaultEnvName))
 		if err != nil {
-			return zero, err
+			return zero, errors.Wrapf(errors.Join(HandleExecutionError, err), "parsing env for flag %q", name)
 		}
 
 		return value.(T), nil
@@ -52,7 +48,7 @@ func ArgValue[T any](ctx context.Context, name string) (T, error) {
 
 	arg, found := command.findArg(name)
 	if !found {
-		return zero, errors.Wrapf(ArgumentNotFoundError, "finding argument %q", name)
+		return zero, errors.Wrapf(HandleExecutionError, "finding argument %q", name)
 	}
 
 	if arg.value != nil {
@@ -60,6 +56,15 @@ func ArgValue[T any](ctx context.Context, name string) (T, error) {
 	}
 
 	return arg.defaultValue.(T), nil
+}
+
+func Rest(ctx context.Context) ([]string, error) {
+	command, err := commandFromContext(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "getting remaining args")
+	}
+
+	return command.rest, nil
 }
 
 type commandContextKeyType struct{}
@@ -73,7 +78,7 @@ func (c *Command) onContext(parent context.Context) context.Context {
 func commandFromContext(ctx context.Context) (*Command, error) {
 	command, ok := ctx.Value(commandContextKey).(*Command)
 	if !ok {
-		return nil, NotACommandContextError
+		return nil, errors.Wrap(HandleExecutionError, "not a command context")
 	}
 
 	return command, nil

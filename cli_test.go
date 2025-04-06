@@ -194,6 +194,21 @@ func Test_git(t *testing.T) {
 				}
 			},
 		},
+		"rest args": {
+			rawArgs: []string{"checkout", "some-branch", "--", "more", "tokens", "here"},
+			checkoutHandler: func(t *testing.T) Handler {
+				called := ensureCalled(t)
+
+				return func(ctx context.Context) error {
+					called()
+
+					rest, err := Rest(ctx)
+					test.NoError(t, err)
+					test.DeepEqual(t, rest, []string{"more", "tokens", "here"})
+					return nil
+				}
+			},
+		},
 	}
 
 	for name, testCase := range testCases {

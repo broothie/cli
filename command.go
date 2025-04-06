@@ -21,6 +21,7 @@ type Command struct {
 	subCommands []*Command
 	flags       []*Flag
 	arguments   []*Argument
+	rest        []string
 	handler     Handler
 }
 
