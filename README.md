@@ -120,6 +120,6 @@ if err := cmd.Run(context.TODO(), os.Args[1:]); err != nil {
 
 - [ ] Audit bare `err` returns
   - [ ] Two types of errors: config and parse
-- [ ] Tab completion
+- [x] Tab completion
 - [ ] Allow variadic arguments
 - [ ] Allow slice and map based flags?

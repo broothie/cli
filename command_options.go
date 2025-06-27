@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/broothie/option"
@@ -90,4 +91,36 @@ func AddHelpFlag(options ...option.Option[*Flag]) option.Func[*Command] {
 func AddVersionFlag(options ...option.Option[*Flag]) option.Func[*Command] {
 	defaultOptions := option.NewOptions(setFlagIsVersion(true), SetFlagDefault(false))
 	return AddFlag(versionFlagName, "Print version.", append(defaultOptions, options...)...)
+}
+
+// EnableCompletion adds a hidden completion command to the root command
+func EnableCompletion() option.Func[*Command] {
+	return func(command *Command) (*Command, error) {
+		// Only add to root commands
+		if command.parent != nil {
+			return command, nil
+		}
+		
+		completionCmd := CompletionCommand(command)
+		return MountSubCmd(completionCmd).Apply(command)
+	}
+}
+
+// AddCompletionCommand adds a "completion" subcommand that generates shell completion scripts
+func AddCompletionCommand() option.Func[*Command] {
+	return func(command *Command) (*Command, error) {
+		// Only add to root commands
+		if command.parent != nil {
+			return command, nil
+		}
+		
+		return AddSubCmd("completion", "Generate shell completion scripts",
+			AddSubCmd("bash", "Generate bash completion script",
+				SetHandler(func(ctx context.Context) error {
+					fmt.Print(command.GenerateBashCompletion())
+					return nil
+				}),
+			),
+		).Apply(command)
+	}
 }
