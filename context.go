@@ -62,6 +62,35 @@ func ArgValue[T any](ctx context.Context, name string) (T, error) {
 	return arg.defaultValue.(T), nil
 }
 
+func VariadicArgValue[T any](ctx context.Context, name string) ([]T, error) {
+	command, err := commandFromContext(ctx)
+	if err != nil {
+		return nil, errors.Wrapf(err, "finding variadic argument %q", name)
+	}
+
+	arg, found := command.findArg(name)
+	if !found {
+		return nil, errors.Wrapf(ArgumentNotFoundError, "finding variadic argument %q", name)
+	}
+
+	if !arg.isVariadic() {
+		return nil, errors.Errorf("argument %q is not variadic", name)
+	}
+
+	if arg.value == nil {
+		return []T{}, nil
+	}
+
+	// Convert []any to []T
+	anySlice := arg.value.([]any)
+	result := make([]T, len(anySlice))
+	for i, v := range anySlice {
+		result[i] = v.(T)
+	}
+
+	return result, nil
+}
+
 type commandContextKeyType struct{}
 
 var commandContextKey = commandContextKeyType{}

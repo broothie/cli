@@ -205,8 +205,13 @@ func (p *parser) processArg() error {
 		return errors.Wrapf(TooManyArgumentsError, "only expected %d arguments", len(p.command.arguments))
 	}
 
-	current, _ := p.current()
 	argument := p.command.arguments[p.argumentIndex]
+	
+	if argument.isVariadic() {
+		return p.processVariadicArg(argument)
+	}
+
+	current, _ := p.current()
 	value, err := argument.parser.Parse(current)
 	if err != nil {
 		return errors.Wrapf(err, "parsing provided value %q for argument %d", current, p.argumentIndex+1)
@@ -214,6 +219,41 @@ func (p *parser) processArg() error {
 
 	argument.value = value
 	p.index += 1
+	p.argumentIndex += 1
+	return nil
+}
+
+func (p *parser) processVariadicArg(argument *Argument) error {
+	var values []any
+	
+	// Collect all remaining arguments that aren't flags or subcommands
+	for p.index < len(p.tokens) {
+		current, _ := p.current()
+		
+		// Stop if we encounter a flag
+		if strings.HasPrefix(current, flagPrefix) {
+			break
+		}
+		
+		// Stop if we encounter a subcommand
+		if _, found := lo.Find(p.command.subCommands, func(subCommand *Command) bool { 
+			return subCommand.name == current 
+		}); found {
+			break
+		}
+		
+		// Parse the current argument
+		value, err := argument.parser.Parse(current)
+		if err != nil {
+			return errors.Wrapf(err, "parsing provided value %q for variadic argument %q", current, argument.name)
+		}
+		
+		values = append(values, value)
+		p.index += 1
+	}
+	
+	// Store the collected values as a slice
+	argument.value = values
 	p.argumentIndex += 1
 	return nil
 }

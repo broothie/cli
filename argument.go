@@ -13,6 +13,7 @@ type Argument struct {
 	description  string
 	parser       argParser
 	defaultValue any
+	variadic     bool
 
 	value any
 }
@@ -44,12 +45,21 @@ func (a *Argument) isOptional() bool {
 	return !a.isRequired()
 }
 
+func (a *Argument) isVariadic() bool {
+	return a.variadic
+}
+
 func (a *Argument) inBrackets() string {
-	if a.isOptional() {
-		return fmt.Sprintf("[<%s>]", a.name)
+	name := a.name
+	if a.isVariadic() {
+		name += "..."
 	}
 
-	return fmt.Sprintf("<%s>", a.name)
+	if a.isOptional() {
+		return fmt.Sprintf("[<%s>]", name)
+	}
+
+	return fmt.Sprintf("<%s>", name)
 }
 
 func (c *Command) findArg(name string) (*Argument, bool) {

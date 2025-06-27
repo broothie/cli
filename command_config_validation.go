@@ -8,6 +8,7 @@ func (c *Command) validateConfig() error {
 		c.validateNoDuplicateArguments,
 		c.validateNoDuplicateSubCommands,
 		c.validateEitherCommandsOrArguments,
+		c.validateVariadicArguments,
 	}
 
 	var errs []error
@@ -71,4 +72,24 @@ func (c *Command) validateEitherCommandsOrArguments() error {
 	}
 
 	return nil
+}
+
+func (c *Command) validateVariadicArguments() error {
+	var errs []error
+
+	// Check that only the last argument can be variadic
+	for i, argument := range c.arguments {
+		if argument.isVariadic() && i != len(c.arguments)-1 {
+			errs = append(errs, errors.Errorf("only the last argument can be variadic, but argument %q at position %d is variadic", argument.name, i+1))
+		}
+	}
+
+	// Check that variadic arguments cannot have default values  
+	for _, argument := range c.arguments {
+		if argument.isVariadic() && argument.isOptional() {
+			errs = append(errs, errors.Errorf("variadic argument %q cannot have a default value", argument.name))
+		}
+	}
+
+	return errors.Join(errs...)
 }

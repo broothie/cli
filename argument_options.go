@@ -23,3 +23,13 @@ func SetArgDefault[T Parseable](defaultValue T) option.Func[*Argument] {
 		return argument, nil
 	}
 }
+
+// SetArgVariadic makes the argument accept a variable number of values.
+// When set, this argument will collect all remaining command line arguments
+// into a slice. Only the last argument in a command can be variadic.
+func SetArgVariadic() option.Func[*Argument] {
+	return func(argument *Argument) (*Argument, error) {
+		argument.variadic = true
+		return argument, nil
+	}
+}
