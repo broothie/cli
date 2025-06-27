@@ -85,7 +85,11 @@ func VariadicArgValue[T any](ctx context.Context, name string) ([]T, error) {
 	anySlice := arg.value.([]any)
 	result := make([]T, len(anySlice))
 	for i, v := range anySlice {
-		result[i] = v.(T)
+		if val, ok := v.(T); ok {
+			result[i] = val
+		} else {
+			return nil, errors.Errorf("invalid type in variadic argument %q at index %d: expected %T, got %T", name, i, *new(T), v)
+		}
 	}
 
 	return result, nil
