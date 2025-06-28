@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/broothie/option"
-	"github.com/broothie/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCommand_config_validations(t *testing.T) {
@@ -47,7 +47,7 @@ func TestCommand_config_validations(t *testing.T) {
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
 			_, err := NewCommand("test", "test command", testCase.commandOptions...)
-			test.ErrorMessageIs(t, err, testCase.expectedError)
+			assert.ErrorMessageIs(t, err, testCase.expectedError)
 		})
 	}
 }
