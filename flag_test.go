@@ -17,7 +17,7 @@ func TestCommand_flagsUpToRoot(t *testing.T) {
 		),
 	)
 
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
 	flags := command.subCommands[0].flagsUpToRoot()
 	flagNames := lo.Map(flags, func(flag *Flag, _ int) string { return flag.name })

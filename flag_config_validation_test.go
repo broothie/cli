@@ -23,6 +23,6 @@ func TestFlag_validateConfig(t *testing.T) {
 	t.Run("valid name", func(t *testing.T) {
 		flag := &Flag{name: "valid-flag"}
 		err := flag.validateConfig()
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	})
 }

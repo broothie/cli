@@ -14,5 +14,5 @@ func TestArgument_validateInput(t *testing.T) {
 	assert.EqualError(t, arg.validateInput(), `argument "test-arg": argument missing value`)
 
 	arg.value = "something"
-	require.NoError(t, arg.validateInput())
+	assert.NoError(t, arg.validateInput())
 }

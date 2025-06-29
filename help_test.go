@@ -38,10 +38,10 @@ func TestCommand_renderHelp(t *testing.T) {
 			),
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		require.NoError(t, command.renderHelp(buffer))
+		assert.NoError(t, command.renderHelp(buffer))
 
 		assert.Equal(t,
 			heredoc.Doc(`
@@ -75,10 +75,10 @@ func TestCommand_renderHelp(t *testing.T) {
 			AddSubCmd("some-command", "some command"),
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		require.NoError(t, command.renderHelp(buffer))
+		assert.NoError(t, command.renderHelp(buffer))
 
 		assert.Equal(t,
 			heredoc.Doc(`
@@ -110,10 +110,10 @@ func TestCommand_renderHelp(t *testing.T) {
 			),
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		require.NoError(t, command.subCommands[0].renderHelp(buffer))
+		assert.NoError(t, command.subCommands[0].renderHelp(buffer))
 
 		assert.Equal(t,
 			heredoc.Doc(`

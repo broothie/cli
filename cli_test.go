@@ -43,7 +43,7 @@ func Test_git(t *testing.T) {
 					called()
 
 					gitDir, err := FlagValue[string](ctx, "git-dir")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "/path/to/something", gitDir)
 
 					return nil
@@ -58,7 +58,7 @@ func Test_git(t *testing.T) {
 					called()
 
 					gitDir, err := FlagValue[string](ctx, "git-dir")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "/path/to/something", gitDir)
 
 					return nil
@@ -83,7 +83,7 @@ func Test_git(t *testing.T) {
 					called()
 
 					message, err := FlagValue[string](ctx, "message")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "a commit message", message)
 
 					return nil
@@ -98,11 +98,11 @@ func Test_git(t *testing.T) {
 					called()
 
 					isAll, err := FlagValue[bool](ctx, "all")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.False(t, isAll)
 
 					message, err := FlagValue[string](ctx, "message")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "a commit message", message)
 
 					return nil
@@ -117,11 +117,11 @@ func Test_git(t *testing.T) {
 					called()
 
 					isAll, err := FlagValue[bool](ctx, "all")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.False(t, isAll)
 
 					message, err := FlagValue[string](ctx, "message")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "a commit message", message)
 
 					return nil
@@ -136,11 +136,11 @@ func Test_git(t *testing.T) {
 					called()
 
 					isAll, err := FlagValue[bool](ctx, "all")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.True(t, isAll)
 
 					message, err := FlagValue[string](ctx, "message")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "a commit message", message)
 
 					return nil
@@ -155,7 +155,7 @@ func Test_git(t *testing.T) {
 					called()
 
 					branch, err := ArgValue[string](ctx, "branch")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "some-branch", branch)
 
 					return nil
@@ -170,11 +170,11 @@ func Test_git(t *testing.T) {
 					called()
 
 					branch, err := ArgValue[string](ctx, "branch")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, "some-branch", branch)
 
 					isNewBranch, err := FlagValue[bool](ctx, "new-branch")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.True(t, isNewBranch)
 
 					return nil
@@ -189,7 +189,7 @@ func Test_git(t *testing.T) {
 					called()
 
 					globalGitignore, err := FlagValue[string](ctx, "global-gitignore")
-					require.NoError(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, globalGitignore, "path/to/some/.gitignore")
 					return nil
 				}
@@ -229,7 +229,7 @@ func Test_git(t *testing.T) {
 				SetHandler(lo.IfF(testCase.gitHandler != nil, func() Handler { return testCase.gitHandler(t) }).Else(nil)),
 			)
 
-			require.NoError(t, err)
+			assert.NoError(t, err)
 			assert.Nil(t, command.Run(context.TODO(), testCase.rawArgs))
 		})
 	}

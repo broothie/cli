@@ -30,7 +30,7 @@ func Test_options(t *testing.T) {
 			SetHandler(func(context.Context) error { return nil }),
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		// Command
 		assert.Equal(t, "http", httpCommand.name)

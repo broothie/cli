@@ -23,6 +23,6 @@ func TestArgument_validateConfig(t *testing.T) {
 	t.Run("valid name", func(t *testing.T) {
 		arg := &Argument{name: "valid-arg"}
 		err := arg.validateConfig()
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	})
 }
