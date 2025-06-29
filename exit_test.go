@@ -5,17 +5,17 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/broothie/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestExitError_Error(t *testing.T) {
 	err := &ExitError{Code: 2}
-	test.Equal(t, "exit status 2", err.Error())
+	assert.Equal(t, "exit status 2", err.Error())
 }
 
 func TestExitCode(t *testing.T) {
 	err := ExitCode(3)
-	test.Equal(t, 3, err.Code)
+	assert.Equal(t, 3, err.Code)
 }
 
 func TestExitWithError(t *testing.T) {
@@ -30,7 +30,7 @@ func TestExitWithError(t *testing.T) {
 	err := cmd.Run()
 
 	if exitErr, ok := err.(*exec.ExitError); ok {
-		test.Equal(t, 4, exitErr.ExitCode())
+		assert.Equal(t, 4, exitErr.ExitCode())
 	} else {
 		t.Errorf("expected ExitError, got %v", err)
 	}

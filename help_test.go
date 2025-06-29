@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/broothie/test"
+	"github.com/stretchr/testify/assert"
 )
 
 type CustomType struct {
@@ -37,12 +37,12 @@ func TestCommand_renderHelp(t *testing.T) {
 			),
 		)
 
-		test.NoError(t, err)
+		assert.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		test.NoError(t, command.renderHelp(buffer))
+		assert.NoError(t, command.renderHelp(buffer))
 
-		test.Equal(t,
+		assert.Equal(t,
 			heredoc.Doc(`
 				test v1.2.3-rc10: test command
 
@@ -74,12 +74,12 @@ func TestCommand_renderHelp(t *testing.T) {
 			AddSubCmd("some-command", "some command"),
 		)
 
-		test.NoError(t, err)
+		assert.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		test.NoError(t, command.renderHelp(buffer))
+		assert.NoError(t, command.renderHelp(buffer))
 
-		test.Equal(t,
+		assert.Equal(t,
 			heredoc.Doc(`
 				test v1.2.3-rc10: test command
 
@@ -109,12 +109,12 @@ func TestCommand_renderHelp(t *testing.T) {
 			),
 		)
 
-		test.NoError(t, err)
+		assert.NoError(t, err)
 
 		buffer := new(bytes.Buffer)
-		test.NoError(t, command.subCommands[0].renderHelp(buffer))
+		assert.NoError(t, command.subCommands[0].renderHelp(buffer))
 
-		test.Equal(t,
+		assert.Equal(t,
 			heredoc.Doc(`
 				test v1.2.3-rc10: test command
 
