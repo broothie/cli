@@ -3,15 +3,16 @@ package cli
 import (
 	"testing"
 
-	"github.com/broothie/test"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestArgument_validateInput(t *testing.T) {
 	arg, err := newArgument("test-arg", "Test arg.")
-	test.MustNoError(t, err)
+	require.NoError(t, err)
 
-	test.ErrorMessageIs(t, arg.validateInput(), `argument "test-arg": argument missing value`)
+	assert.EqualError(t, arg.validateInput(), `argument "test-arg": argument missing value`)
 
 	arg.value = "something"
-	test.NoError(t, arg.validateInput())
+	require.NoError(t, arg.validateInput())
 }
