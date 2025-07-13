@@ -130,7 +130,7 @@ func ExampleAddSubCmd() {
 	// Usage:
 	//   server [sub-command]
 	//
-	// Sub-command:
+	// Sub-commands:
 	//   start: Start the server
 }
 

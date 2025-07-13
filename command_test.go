@@ -33,7 +33,7 @@ func ExampleNewCommand() {
 	// Usage:
 	//   server [flags] [sub-command]
 	//
-	// Sub-command:
+	// Sub-commands:
 	//   proxy: Proxy requests to another server.
 	//
 	// Flags:
